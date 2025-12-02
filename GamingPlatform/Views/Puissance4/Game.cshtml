@@ -1,0 +1,782 @@
+@{
+    ViewData["Title"] = "Puissance 4";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2) { left: 20%; animation-delay: -2s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(3) { left: 40%; animation-delay: -4s; }
+        .particle:nth-child(4) { left: 60%; animation-delay: -6s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(5) { left: 80%; animation-delay: -8s; }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @@keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .logo-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-dot.red { background: #ff6b6b; box-shadow: 0 0 20px rgba(255, 107, 107, 0.5); }
+        .logo-dot.cyan { background: #4ecdc4; box-shadow: 0 0 20px rgba(78, 205, 196, 0.5); animation-delay: 0.5s; }
+
+        @@keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            font-weight: 300;
+            margin-top: 8px;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #status {
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            color: #a0aec0;
+            transition: all 0.3s ease;
+        }
+
+        #status.highlight {
+            color: #4ecdc4;
+        }
+
+        /* Username Section */
+        .username-section {
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.6s ease-out 0.4s both;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #6b7280;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.15);
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .btn-play {
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-play::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-play:hover::before {
+            left: 100%;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-play:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-play:disabled:hover::before {
+            left: -100%;
+        }
+
+        /* Loading dots animation */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            animation: loadingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @@keyframes loadingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Game Container */
+        #gameContainer {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        .player-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-tag.red { border-color: rgba(255, 107, 107, 0.3); }
+        .player-tag.cyan { border-color: rgba(78, 205, 196, 0.3); }
+
+        .player-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .player-dot.red { background: #ff6b6b; box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+        .player-dot.cyan { background: #4ecdc4; box-shadow: 0 0 10px rgba(78, 205, 196, 0.5); }
+
+        .vs-text {
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Game Board */
+        #gameBoard {
+            background: linear-gradient(145deg, #1e3a5f 0%, #152238 100%);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .board-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .board-cell {
+            width: 56px;
+            height: 56px;
+            margin: 5px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0d1b2a, #1b2838);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 
+                inset 0 4px 8px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .board-cell::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0a1520, #152030);
+        }
+
+        .board-cell:hover:not(.disabled):not(.Rouge):not(.Jaune) {
+            transform: scale(1.08);
+            box-shadow: 
+                inset 0 4px 8px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .board-cell.Rouge {
+            background: linear-gradient(145deg, #ff6b6b, #e05555);
+            box-shadow: 
+                0 0 20px rgba(255, 107, 107, 0.4),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 4px 8px rgba(255, 255, 255, 0.2);
+            animation: dropIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .board-cell.Rouge::before {
+            background: linear-gradient(145deg, #ff8080, #ff5555);
+        }
+
+        .board-cell.Jaune {
+            background: linear-gradient(145deg, #4ecdc4, #3dbdb5);
+            box-shadow: 
+                0 0 20px rgba(78, 205, 196, 0.4),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 4px 8px rgba(255, 255, 255, 0.2);
+            animation: dropIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .board-cell.Jaune::before {
+            background: linear-gradient(145deg, #6ee0d8, #4ecdc4);
+        }
+
+        @@keyframes dropIn {
+            0% { transform: translateY(-300px) scale(0.8); opacity: 0; }
+            60% { transform: translateY(10px) scale(1.05); }
+            80% { transform: translateY(-5px) scale(0.98); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .board-cell.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Winner animation */
+        .board-cell.winner {
+            animation: winPulse 0.6s infinite alternate;
+        }
+
+        @@keyframes winPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); box-shadow: 0 0 30px currentColor; }
+        }
+
+        /* Column indicator */
+        .column-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .col-arrow {
+            width: 56px;
+            margin: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .col-arrow.active {
+            color: #4ecdc4;
+            animation: bounce 0.6s infinite;
+        }
+
+        @@keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* New game button */
+        .btn-new-game {
+            margin-top: 24px;
+            padding: 12px 28px;
+            background: transparent;
+            border: 2px solid rgba(78, 205, 196, 0.5);
+            border-radius: 50px;
+            color: #4ecdc4;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-new-game:hover {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: #4ecdc4;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @@media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            
+            .board-cell {
+                width: 42px;
+                height: 42px;
+                margin: 3px;
+            }
+            
+            .col-arrow {
+                width: 42px;
+                margin: 3px;
+            }
+            
+            #gameBoard {
+                padding: 12px;
+            }
+        }
+
+        /* Hide/Show utility */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="bg-particles">
+        <div class="particle" style="left: 10%;"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-dots">
+                    <span class="logo-dot red"></span>
+                    <span class="logo-dot cyan"></span>
+                </div>
+            </div>
+            <h1>Puissance 4</h1>
+            <p class="subtitle">Alignez 4 jetons pour gagner</p>
+        </header>
+
+        <!-- Status Card -->
+        <div class="status-card">
+            <p id="status">Entrez votre pseudo pour commencer</p>
+        </div>
+
+        <!-- Username Section -->
+        <div class="username-section" id="usernameSection">
+            <div class="input-wrapper">
+                <span class="icon">👤</span>
+                <input type="text" id="username" placeholder="Votre pseudo..." autofocus />
+            </div>
+            <button id="findGame" class="btn-play">
+                <span class="btn-text">Trouver un adversaire</span>
+                <span>🎮</span>
+            </button>
+        </div>
+
+        <!-- Game Container -->
+        <div id="gameContainer" class="hidden">
+            <div class="player-info">
+                <div class="player-tag red">
+                    <span class="player-dot red"></span>
+                    <span id="player1Name">Joueur 1</span>
+                </div>
+                <span class="vs-text">VS</span>
+                <div class="player-tag cyan">
+                    <span class="player-dot cyan"></span>
+                    <span id="player2Name">Joueur 2</span>
+                </div>
+            </div>
+            
+            <div class="column-indicator" id="columnIndicator"></div>
+            <div id="gameBoard"></div>
+            
+            <button id="newGameBtn" class="btn-new-game hidden">
+                ↻ Nouvelle partie
+            </button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            let playerId;
+            let currentGame = null;
+            let myColor = null;
+            let isSearching = false;
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/puissance4Hub")
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            connection.on("PlayerJoined", function (player) {
+                playerId = player.id;
+                setStatus("En attente d'un adversaire...", true);
+                setSearchingState(true);
+            });
+
+            connection.on("UsernameTaken", function () {
+                setStatus("Ce pseudo est déjà pris !", false);
+                enableInput();
+            });
+
+            connection.on("WaitingForOpponent", function () {
+                setStatus("En attente d'un adversaire...", true);
+            });
+
+            connection.on("GameStart", function (gameData) {
+                currentGame = gameData;
+                myColor = gameData.player1.name === $('#username').val() 
+                    ? gameData.player1.color 
+                    : gameData.player2.color;
+
+                $('#usernameSection').addClass('hidden');
+                $('#gameContainer').removeClass('hidden');
+
+                $('#player1Name').text(gameData.player1.name);
+                $('#player2Name').text(gameData.player2.name);
+
+                buildBoard(gameData.board);
+                buildColumnIndicator();
+                updateStatus(gameData.currentPlayer);
+            });
+
+            connection.on("PiecePlaced", function (moveData) {
+                updateCell(moveData.row, moveData.column, moveData.color);
+            });
+
+            connection.on("UpdateTurn", function (turnData) {
+                updateStatus(turnData.currentPlayer);
+            });
+
+            connection.on("GameOver", function (result) {
+                disableBoard();
+                
+                if (result.isTie) {
+                    setStatus("🤝 Match nul !", false);
+                } else {
+                    const emoji = result.winnerColor === "Rouge" ? "🔴" : "🟢";
+                    setStatus(`${emoji} ${result.winner} a gagné !`, false);
+                }
+
+                $('#newGameBtn').removeClass('hidden');
+                hideColumnIndicator();
+            });
+
+            connection.on("NotYourTurn", function (message) { });
+            connection.on("InvalidMove", function (message) { });
+
+            connection.on("Error", function (message) {
+                setStatus("❌ " + message, false);
+            });
+
+            connection.on("OpponentLeft", function (message) {
+                setStatus("😔 " + message, false);
+                disableBoard();
+                $('#newGameBtn').removeClass('hidden');
+                hideColumnIndicator();
+            });
+
+            $('#findGame').click(function () {
+                const username = $('#username').val().trim();
+                if (!username) {
+                    shakeInput();
+                    return;
+                }
+
+                disableInput();
+                setSearchingState(true);
+                
+                connection.invoke("FindGame", username).catch(function (err) {
+                    console.error("Error:", err);
+                    enableInput();
+                    setSearchingState(false);
+                });
+            });
+
+            $('#username').keypress(function (e) {
+                if (e.which === 13) {
+                    $('#findGame').click();
+                    return false;
+                }
+            });
+
+            $('#newGameBtn').click(function () {
+                resetGame();
+            });
+
+            function setStatus(text, searching) {
+                const status = $('#status');
+                status.html(searching ? text + '<br><div class="loading-dots"><span></span><span></span><span></span></div>' : text);
+                status.toggleClass('highlight', searching);
+            }
+
+            function setSearchingState(searching) {
+                isSearching = searching;
+                const btn = $('#findGame');
+                if (searching) {
+                    btn.find('.btn-text').text('Recherche en cours');
+                } else {
+                    btn.find('.btn-text').text('Trouver un adversaire');
+                }
+            }
+
+            function shakeInput() {
+                const input = $('#username');
+                input.css('animation', 'shake 0.5s');
+                setTimeout(() => input.css('animation', ''), 500);
+            }
+
+            function enableInput() {
+                $('#username').prop('disabled', false);
+                $('#findGame').prop('disabled', false);
+                $('#username').focus();
+                setSearchingState(false);
+            }
+
+            function disableInput() {
+                $('#username').prop('disabled', true);
+                $('#findGame').prop('disabled', true);
+            }
+
+            function buildBoard(boardData) {
+                const board = $('#gameBoard');
+                board.empty();
+
+                for (let row = 0; row < 6; row++) {
+                    const rowDiv = $('<div class="board-row"></div>');
+                    for (let col = 0; col < 7; col++) {
+                        const cell = $(`<div class="board-cell" data-row="${row}" data-col="${col}"></div>`);
+                        
+                        if (boardData[row][col] !== "Empty") {
+                            cell.addClass(boardData[row][col]);
+                        }
+
+                        cell.click(function () {
+                            placePiece($(this).data('col'));
+                        });
+
+                        cell.hover(
+                            function() { highlightColumn($(this).data('col'), true); },
+                            function() { highlightColumn($(this).data('col'), false); }
+                        );
+
+                        rowDiv.append(cell);
+                    }
+                    board.append(rowDiv);
+                }
+            }
+
+            function buildColumnIndicator() {
+                const indicator = $('#columnIndicator');
+                indicator.empty();
+                for (let i = 0; i < 7; i++) {
+                    indicator.append('<span class="col-arrow">▼</span>');
+                }
+            }
+
+            function highlightColumn(col, highlight) {
+                const arrows = $('#columnIndicator .col-arrow');
+                arrows.eq(col).toggleClass('active', highlight);
+            }
+
+            function hideColumnIndicator() {
+                $('#columnIndicator .col-arrow').removeClass('active');
+            }
+
+            function updateCell(row, col, color) {
+                const cell = $(`.board-cell[data-row="${row}"][data-col="${col}"]`);
+                cell.addClass(color);
+            }
+
+            function placePiece(column) {
+                connection.invoke("PlacePiece", column).catch(function (err) {
+                    console.error("Error:", err);
+                });
+            }
+
+            function updateStatus(currentPlayerName) {
+                const isMyTurn = ($('#username').val() === currentPlayerName);
+                const emoji = currentPlayerName === currentGame.player1.name ? "🔴" : "🟢";
+                
+                if (isMyTurn) {
+                    setStatus(`${emoji} C'est votre tour !`, false);
+                } else {
+                    setStatus(`${emoji} Tour de ${currentPlayerName}`, false);
+                }
+            }
+
+            function disableBoard() {
+                $('.board-cell').addClass('disabled').off('click').off('mouseenter mouseleave');
+            }
+
+            function resetGame() {
+                $('#gameContainer').addClass('hidden');
+                $('#usernameSection').removeClass('hidden');
+                $('#newGameBtn').addClass('hidden');
+                $('#username').val('');
+                $('#gameBoard').empty();
+                $('#columnIndicator').empty();
+                enableInput();
+                currentGame = null;
+                myColor = null;
+                setStatus("Entrez votre pseudo pour commencer", false);
+            }
+
+            connection.start().then(function () {
+                enableInput();
+            }).catch(function (err) {
+                setStatus("❌ Erreur de connexion", false);
+            });
+        });
+    </script>
+</body>
+</html>

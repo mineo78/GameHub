@@ -20,7 +20,13 @@ namespace GamingPlatform.Controllers
             return View();
         }
 
-        // Afficher le lobby de jeu
+        // Afficher la page de jeu
+        public IActionResult Game()
+        {
+            return View();
+        }
+
+        // Afficher le lobby de jeu (legacy - peut être supprimé si non utilisé)
         public IActionResult Lobby(string lobbyName)
         {
             if (string.IsNullOrEmpty(lobbyName))
@@ -33,13 +39,13 @@ namespace GamingPlatform.Controllers
             return View();
         }
 
-         // Accéder au jeu
-     public IActionResult Puissance4(string lobby, string player)
-    {
-        ViewBag.LobbyName = lobby;
-        ViewBag.PlayerName = player;
-        return View();
-    }
+        // Accéder au jeu (legacy - peut être supprimé si non utilisé)
+        public IActionResult Puissance4(string lobby, string player)
+        {
+            ViewBag.LobbyName = lobby;
+            ViewBag.PlayerName = player;
+            return View();
+        }
 
         // Créer un lobby
         [HttpPost]
