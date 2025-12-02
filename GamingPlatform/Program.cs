@@ -1,10 +1,12 @@
 using GamingPlatform.Hubs;
 using GamingPlatform.Hubs.Morpion;
+using GamingPlatform.Hubs.Puissance4;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<GameState>();
+builder.Services.AddSingleton<GamingPlatform.Hubs.Morpion.GameState>();
+builder.Services.AddSingleton<GamingPlatform.Hubs.Puissance4.GameState>();
 
 // Ajouter les services de session
 builder.Services.AddSession(options =>
@@ -77,6 +79,7 @@ app.UseAuthorization();
 
 app.MapHub<GamingPlatform.Hubs.SpeedTypingHub>("/speedTypingHub");
 app.MapHub<GamingPlatform.Hubs.Morpion.MorpionHub>("/morpionHub");
+app.MapHub<GamingPlatform.Hubs.Puissance4.Puissance4Hub>("/puissance4Hub");
 
 
 app.MapControllerRoute(
