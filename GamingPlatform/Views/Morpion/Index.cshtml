@@ -1,550 +1,347 @@
 ﻿@model GamingPlatform.Views.Morpion.MorpionModel
-
 @{
-    ViewData["Title"] = "Morpion";
 }
-
-@section Styles {
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            color: #e0e0e0;
-            overflow-x: hidden;
+            background-color: #2c3e50;
+            color: #ecf0f1;
         }
 
-        /* Animated background particles */
-        .bg-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
+        .card {
+            background-color: #34495e;
+            color: #ecf0f1;
         }
 
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 107, 107, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
+        .btn-primary {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
         }
 
-        .particle:nth-child(2) { left: 20%; animation-delay: -2s; background: rgba(78, 205, 196, 0.3); }
-        .particle:nth-child(3) { left: 40%; animation-delay: -4s; }
-        .particle:nth-child(4) { left: 60%; animation-delay: -6s; background: rgba(78, 205, 196, 0.3); }
-        .particle:nth-child(5) { left: 80%; animation-delay: -8s; }
-
-        @@keyframes float {
-            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        .btn-primary:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
         }
 
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
+        table {
             margin: 0 auto;
-            padding: 40px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            table-layout: fixed;
+            font-size: 50px;
+            background-color: #34495e;
+            color: #ecf0f1;
+            border-collapse: collapse;
         }
 
-        /* Header */
-        .header {
+        table td {
+            width: 100px;
+            height: 100px;
             text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease-out;
+            vertical-align: middle;
+            border: 3px solid #2c3e50;
+            cursor: pointer;
         }
 
-        @@keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffd700, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            color: #6b7280;
-            font-size: 0.95rem;
-            font-weight: 300;
-            margin-top: 8px;
-        }
-
-        /* Status Card */
-        .status-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 24px 32px;
-            margin-bottom: 32px;
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 500px;
-            animation: fadeIn 0.6s ease-out 0.2s both;
-        }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #status {
-            font-size: 1.1rem;
-            font-weight: 500;
-            text-align: center;
-            color: #a0aec0;
-            transition: all 0.3s ease;
-        }
-
-        /* Username Section */
-        .username-section {
-            width: 100%;
-            max-width: 400px;
-            animation: fadeIn 0.6s ease-out 0.4s both;
-        }
-
-        .input-wrapper {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            padding: 16px 20px 16px 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+        table td:hover {
+            background-color: #e74c3c;
             color: #fff;
-            font-size: 1rem;
-            font-family: 'Outfit', sans-serif;
-            transition: all 0.3s ease;
-            outline: none;
         }
-
-        .input-wrapper input::placeholder {
-            color: #6b7280;
-        }
-
-        .input-wrapper input:focus {
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.15);
-        }
-
-        .input-wrapper .icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            font-size: 1.1rem;
-        }
-
-        .btn-play {
-            width: 100%;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
-            border: none;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-play::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-play:hover::before {
-            left: 100%;
-        }
-
-        .btn-play:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.3);
-        }
-
-        .btn-play:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Game Container */
-        #gameContainer {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .player-info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 32px;
-            font-size: 1.1rem;
-        }
-
-        .player-tag {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .player-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .player-dot.x { background: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .player-dot.o { background: #4ecdc4; box-shadow: 0 0 10px rgba(78, 205, 196, 0.5); }
-
-        .vs-text {
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* Game Board */
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 80px);
-            gap: 10px;
-            background: linear-gradient(145deg, #1e3a5f 0%, #152238 100%);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 32px;
-        }
-
-        .cell {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #0d1b2a, #1b2838);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            font-size: 2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 
-                inset 0 4px 8px rgba(0, 0, 0, 0.4),
-                0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .cell:hover:not(.taken) {
-            transform: scale(1.05);
-            border-color: #4ecdc4;
-            box-shadow: 
-                inset 0 4px 8px rgba(0, 0, 0, 0.4),
-                0 0 20px rgba(78, 205, 196, 0.3);
-        }
-
-        .cell.x {
-            color: #ffd700;
-            animation: placeMove 0.3s ease-out;
-        }
-
-        .cell.o {
-            color: #4ecdc4;
-            animation: placeMove 0.3s ease-out;
-        }
-
-        @@keyframes placeMove {
-            from { transform: scale(0.3); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .cell.taken {
-            cursor: not-allowed;
-        }
-
-        /* Buttons */
-        .btn-new-game {
-            margin-top: 24px;
-            padding: 12px 28px;
-            background: transparent;
-            border: 2px solid rgba(78, 205, 196, 0.5);
-            border-radius: 50px;
-            color: #4ecdc4;
-            font-size: 0.95rem;
-            font-weight: 500;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-new-game:hover {
-            background: rgba(78, 205, 196, 0.1);
-            border-color: #4ecdc4;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
-        @@media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            
-            .game-board {
-                grid-template-columns: repeat(3, 60px);
-                gap: 8px;
-                padding: 12px;
-            }
-            
-            .cell {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Utility */
-        .hidden { display: none !important; }
     </style>
-}
+</head>
+<body>
+      <script id="board-template" type="text/x-handlebars-template">
+        {{debug}}
+        <table>
+            <tbody>
+                {{#each Pieces}}
+                <tr>
+                    {{#each this}}
+                    <td id="pos-{{@@../index}}-{{@@index}}">{{this}}</td>
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </script>
 
-<!-- Background particles -->
-<div class="bg-particles">
-    <div class="particle" style="left: 10%;"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-</div>
 
-<div class="container">
-    <!-- Header -->
-    <header class="header">
-        <h1>Jeu de Morpion</h1>
-        <p class="subtitle">Jouez au jeu classique des croix et des ronds !</p>
-    </header>
-
-    <!-- Status Card -->
-    <div class="status-card">
-        <p id="status">Veuillez entrer un nom d'utilisateur pour commencer.</p>
-    </div>
-
-    <!-- Username Section -->
-    <div class="username-section" id="usernameSection">
-        <div class="input-wrapper">
-            <span class="icon">👤</span>
-            <input type="text" id="username" placeholder="Nom d'utilisateur" autofocus />
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="text-warning">Jeu de Morpion</h1>
+            <p class="text-muted">Jouez au jeu de Morpion avec un autre joueur en temps réel !</p>
         </div>
-        <button id="startGame" class="btn-play">
-            <span>🎮 Trouver un adversaire</span>
-        </button>
-    </div>
 
-    <!-- Game Container -->
-    <div id="gameContainer" class="hidden">
-        <div class="player-info">
-            <div class="player-tag">
-                <span class="player-dot x"></span>
-                <span id="player1Name">Joueur 1</span>
-            </div>
-            <span class="vs-text">VS</span>
-            <div class="player-tag">
-                <span class="player-dot o"></span>
-                <span id="player2Name">Joueur 2</span>
-            </div>
+        <div class="card shadow p-4 mb-4">
+            <h3><i class="fa-solid fa-gamepad"></i> Statut du Jeu :</h3>
+            <p id="status" class="mt-3">Veuillez entrer un nom d'utilisateur pour commencer.</p>
         </div>
-        
-        <div class="game-board" id="gameBoard"></div>
-        
-        <button id="newGameBtn" class="btn-new-game hidden">
-            ↻ Nouvelle partie
-        </button>
-    </div>
-</div>
 
-@section Scripts {
+        <div class="text-center mb-5">
+            <div class="input-group mb-3" style="max-width: 400px; margin: auto;">
+                <span class="input-group-text bg-dark text-light"><i class="fa-solid fa-user"></i></span>
+                <input type="text" id="username" class="form-control" placeholder="Nom d'utilisateur" autofocus />
+            </div>
+            <button id="findGame" class="btn btn-primary"><i class="fa-solid fa-search"></i> Trouver un adversaire</button>
+        </div>
+
+        <div id="board" class="mt-4">
+     
+        </div>
+    </div>
+
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Handlebars -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+
+    <!-- SignalR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
-    
+
+    <!-- SignalR references must be in this order (include jquery first) -->
+    <script src="/js/jquery-1.9.1.min.js"></script>
+
+
     <script type="text/javascript">
         $(function () {
-            let playerId;
-            let currentGame = null;
-            let mySymbol = null;
+            Handlebars.registerHelper("debug", function () {
+                console.log("Current Context");
+                console.log(this);
+            });
 
+            function showFindGameButton() {
+                $('#findGame').show();
+            }
+
+            function hideFindGameButton() {
+                $('#findGame').hide();
+            }
+
+
+            disableInput();
+            $('#username').removeAttr('disabled');
+
+            // CLIENT STATE
+            let playerId;
+
+            // SignalR Connection
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/morpionHub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
-            connection.on("PlayerJoined", function (player) {
+            console.log("SignalR connection state begin:", connection.state);
+
+            // CLIENT METHODS
+      
+                // 1. Lobby créé
+                connection.on("lobbyCreated", function (lobby) {
+                    console.log(`Lobby créé: ${lobby.Name}`);
+                    refreshLobbyList(); // Mettre à jour la liste des lobbys
+                    alert(`Lobby "${lobby.Name}" créé avec succès.`);
+                });
+
+                // 2. Rejoindre un lobby
+                connection.on("joinedLobby", function (lobby) {
+                    console.log(`Rejoint le lobby: ${lobby.Name}`);
+                    $("#status").text(`Vous êtes dans le lobby : ${lobby.Name}`);
+                    showLobbyDetails(lobby);
+                });
+
+                // 3. Joueur a rejoint le lobby
+                connection.on("playerJoinedLobby", function (player) {
+                    console.log(`Joueur rejoint: ${player.Name}`);
+                    $("#lobbyPlayers").append(`<li>${player.Name}</li>`);
+                });
+            connection.on("playerJoined", function (player) {
                 playerId = player.id;
-                setStatus("En attente d'un adversaire...", true);
+                $('#usernameGroup').removeClass("has-error");
+                disableInput();
+            });
+            // 7. Partie commencée
+    connection.on("start", function (game) {
+        console.log("Partie commencée!", game);
+        $("#status").text("La partie a commencé !");
+        // Afficher les détails du jeu ici
+    });
+
+    // Actions utilisateur
+    $("#createLobby").click(function () {
+        const lobbyName = $("#lobbyName").val();
+        const isPrivate = $("input[name='lobbyType']:checked").val() === "private";
+        const password = isPrivate ? $("#lobbyPassword").val() : null;
+
+        connection.invoke("CreateLobby", lobbyName, isPrivate, password).catch(function (err) {
+            console.error(err.toString());
+        });
+    });
+
+    $("#joinLobby").click(function () {
+        const lobbyId = $("#lobbyId").val();
+        const password = $("#lobbyPasswordInput").val();
+
+        connection.invoke("JoinLobby", lobbyId, password).catch(function (err) {
+            console.error(err.toString());
+        });
+    });
+
+
+            connection.on("usernameTaken", function () {
+                $('#status').html("Le nom d'utilisateur est déjà pris.");
+                $('#usernameGroup').addClass("has-error");
             });
 
-            connection.on("GameStart", function (gameData) {
-                currentGame = gameData;
-                mySymbol = gameData.player1.name === $('#username').val() ? 'X' : 'O';
-
-                $('#usernameSection').addClass('hidden');
-                $('#gameContainer').removeClass('hidden');
-
-                $('#player1Name').text(gameData.player1.name);
-                $('#player2Name').text(gameData.player2.name);
-
-                buildBoard();
-                updateStatus(gameData.currentPlayer);
+            connection.on("opponentLeft", function () {
+                $('#status').html("L'adversaire est parti. Jeu terminé.");
+                endGame();
             });
 
-            connection.on("CellClicked", function (moveData) {
-                updateCell(moveData.row, moveData.col, moveData.symbol);
+            connection.on("waitingList", function () {
+                $('#status').html("En attente d'un adversaire.");
             });
 
-            connection.on("UpdateTurn", function (turnData) {
-                updateStatus(turnData.currentPlayer);
+            connection.on("start", function (game) {
+                buildBoard(game.board);
+                const opponent = getOpponent(game);
+                displayOpponent(opponent);
+                displayTurn(game.whoseTurn, true);
             });
 
-            connection.on("GameOver", function (result) {
-                disableBoard();
-                
-                if (result.isDraw) {
-                    setStatus("🤝 Match nul !");
-                } else {
-                    setStatus(`${result.winner === 'X' ? '✖️' : '⭕'} ${result.winner} a gagné !`);
-                }
-
-                $('#newGameBtn').removeClass('hidden');
+            connection.on("notPlayersTurn", function () {
+                $('#status').html("Veuillez attendre votre tour.");
             });
 
-            connection.on("Error", function (message) {
-                setStatus("❌ " + message);
+            connection.on("notValidMove", function () {
+                $('#status').html("Veuillez choisir un autre emplacement.");
             });
 
-            $('#startGame').click(function () {
-                const username = $('#username').val().trim();
-                if (!username) {
-                    $('#username').focus();
-                    return;
-                }
+            connection.on("piecePlaced", function (row, col, piece) {
+                $(`#pos-${row}-${col}`).html(piece);
+            });
 
-                $(this).prop('disabled', true);
-                connection.invoke("JoinGame", username).catch(function (err) {
-                    console.error("Error:", err);
+            connection.on("updateTurn", function (game) {
+                displayTurn(game.whoseTurn);
+            });
+
+            connection.on("tieGame", function () {
+                $('#status').html("Match nul!");
+                endGame();
+                showFindGameButton();
+            });
+
+            connection.on("winner", function (playerName) {
+                $('#status').html("le gagnant : " + playerName);
+                endGame();
+                showFindGameButton();
+            });
+
+            // CLIENT BEHAVIORS
+            $('#findGame').click(function () {
+                const chosenUsername = $('#username').val();
+                hideFindGameButton();
+                connection.invoke("FindGame", chosenUsername).catch(function (err) {
+                    console.error(err.toString());
                 });
             });
 
             $('#username').keypress(function (e) {
-                if (e.which === 13) {
-                    $('#startGame').click();
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $('#findGame').click();
+                    return false;
                 }
+                return true;
             });
 
-            $('#newGameBtn').click(function () {
-                resetGame();
-            });
-
-            function setStatus(text, loading) {
-                const status = $('#status');
-                status.text(text);
+            function enableInput() {
+                $('#username').removeAttr('disabled');
+                $('#findGame').removeAttr('disabled');
+                $('#username').focus();
             }
 
-            function buildBoard() {
-                const board = $('#gameBoard');
-                board.empty();
+            function disableInput() {
+                $('#username').attr('disabled', 'disabled');
+                $('#findGame').attr('disabled', 'disabled');
+            }
 
-                for (let i = 0; i < 9; i++) {
-                    const cell = $(`<div class="cell" data-index="${i}"></div>`);
-                    cell.click(function () {
-                        playMove(i);
+            function endGame() {
+                $('td[id^=pos-]').off('click');
+                enableInput();
+            }
+
+            function displayTurn(playersTurn, isDisplayingOpponent) {
+                let turnMessage = "";
+                if (playerId === playersTurn.id) {
+                    turnMessage = "Votre tour";
+                } else {
+                    turnMessage = `${playersTurn.name}'s turn`;
+                }
+
+                if (isDisplayingOpponent) {
+                    $('#status').html($('#status').html() + turnMessage);
+                } else {
+                    $('#status').html(turnMessage);
+                }
+            }
+
+            function displayOpponent(opponent) {
+                $('#status').html(`Vous jouez contre ${opponent.name}<br />`);
+            }
+
+            function buildBoard(board) {
+                // Transform data to match Handlebars template
+                const boardData = { Pieces: board.pieces };
+
+                // Compile and render Handlebars template
+                const template = Handlebars.compile($('#board-template').html());
+                $('#board').html(template(boardData));
+
+                console.log("Building board with data:", board);
+
+
+                $('td[id^=pos-]').click(function (e) {
+                    e.preventDefault();
+                    const id = this.id;
+                    const parts = id.split("-");
+                    const row = parseInt(parts[1], 10);
+                    const col = parseInt(parts[2], 10);
+                    console.log(`Invoking PlacePiece with row=${row}, col=${col}`);
+                    console.log("SignalR connection state end inside build:", connection.state);
+                    connection.invoke("PlacePiece", row, col).catch(function (err) {
+                        console.error(err.toString());
                     });
-                    board.append(cell);
-                }
-            }
-
-            function updateCell(row, col, symbol) {
-                const index = row * 3 + col;
-                const cell = $(`.cell[data-index="${index}"]`);
-                cell.addClass(symbol.toLowerCase()).text(symbol);
-            }
-
-            function playMove(index) {
-                connection.invoke("PlayMove", index).catch(function (err) {
-                    console.error("Error:", err);
                 });
             }
 
-            function updateStatus(currentPlayerName) {
-                const isMyTurn = ($('#username').val() === currentPlayerName);
-                if (isMyTurn) {
-                    setStatus(`C'est votre tour !`);
-                } else {
-                    setStatus(`Tour de ${currentPlayerName}`);
-                }
+            function getOpponent(game) {
+                return playerId === game.player1.id ? game.player2 : game.player1;
             }
 
-            function disableBoard() {
-                $('.cell').off('click');
-            }
-
-            function resetGame() {
-                $('#gameContainer').addClass('hidden');
-                $('#usernameSection').removeClass('hidden');
-                $('#newGameBtn').addClass('hidden');
-                $('#username').val('').focus();
-                $('#gameBoard').empty();
-                $('#startGame').prop('disabled', false);
-                currentGame = null;
-                mySymbol = null;
-                setStatus("Veuillez entrer un nom d'utilisateur pour commencer.");
-            }
-
-            connection.start().catch(function (err) {
-                setStatus("❌ Erreur de connexion");
+            // Start the SignalR connection
+            connection.start().then(function () {
+                enableInput();
+                showFindGameButton();
+                console.log("SignalR connection state end:", connection.state);
+            }).catch(function (err) {
+                console.error("Error starting SignalR connection:", err.toString());
             });
         });
+
+
     </script>
-}
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                { pageLanguage: 'fr' },
+                'google_translate_element'
+            );
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
