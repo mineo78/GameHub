@@ -67,37 +67,32 @@ namespace GamingPlatform.Hubs
 
 		public virtual async Task JoinLobby(string id, string player)
 		{
-			// Ajouter un client au groupe du lobby
-			/*			if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(player))
-						{
-							TempData["Message"] = "L'identifiant du lobby ou le nom du joueur ne peut pas être vide.";
-							return RedirectToAction("Lobby", new { id });
-						}
+			// Validation des paramètres
+			if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(player))
+			{
+				await Clients.Caller.SendAsync("Error", "L'identifiant du lobby ou le nom du joueur ne peut pas être vide.");
+				return;
+			}
 
-						if (!SpeedTypingController.lobbies.ContainsKey(id))
-						{
-							TempData["Message"] = "Lobby introuvable.";
-							return RedirectToAction("Index");
-						}*/
+			if (!SpeedTypingController.lobbies.ContainsKey(id))
+			{
+				await Clients.Caller.SendAsync("Error", "Lobby introuvable.");
+				return;
+			}
 
 			var lobby = SpeedTypingController.lobbies[id];
 
-			/*			if (lobby.Players.Contains(player))
-						{
-							TempData["Message"] = "Un joueur avec ce nom existe déjà dans ce lobby.";
-							return RedirectToAction("Lobby", new { id });
-						}
-			*/
-			lobby.AddPlayer(player);
-			/*
-						HttpContext.Session.SetString("CurrentPlayer", player);
-						HttpContext.Session.SetString("LobbyId", id);*/
-
+			// Toujours ajouter la connexion au groupe SignalR pour recevoir les mises à jour
 			await Groups.AddToGroupAsync(Context.ConnectionId, id);
-			await this.Clients.Group(id).SendAsync("PlayerJoined", player);
-		}
 
-		public async Task UpdatePlayerProgress(string lobbyId, string playerName, double progress)
+			// Vérifier si le joueur existe déjà dans le lobby
+			if (!lobby.Players.Contains(player))
+			{
+				lobby.AddPlayer(player);
+				// Notifier les autres seulement si c'est un nouveau joueur
+				await this.Clients.Group(id).SendAsync("PlayerJoined", player);
+			}
+		}		public async Task UpdatePlayerProgress(string lobbyId, string playerName, double progress)
 		{
 			try
 			{

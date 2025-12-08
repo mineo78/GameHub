@@ -11,46 +11,241 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Typing Game</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
         }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2) { left: 20%; animation-delay: -2s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(3) { left: 40%; animation-delay: -4s; }
+        .particle:nth-child(4) { left: 60%; animation-delay: -6s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(5) { left: 80%; animation-delay: -8s; }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        h2, h3 {
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
         .card {
-            background-color: #34495e;
-            color: #ecf0f1;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #e0e0e0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 20px;
         }
+
         .list-group-item {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            border: 1px solid #34495e;
+            background: rgba(15, 15, 26, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            padding: 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
         }
+
+        .badge {
+            background: linear-gradient(135deg, #4ecdc4, #44a3a0);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-weight: 500;
+        }
+
+        .input-group-text {
+            background: rgba(15, 15, 26, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: #4ecdc4;
+        }
+
+        .form-control {
+            background: rgba(15, 15, 26, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #e0e0e0;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .form-control:focus {
+            background: rgba(15, 15, 26, 0.8);
+            border-color: #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            color: #e0e0e0;
+        }
+
+        .form-control::placeholder {
+            color: rgba(224, 224, 224, 0.5);
+        }
+
         .btn-primary {
-            background-color: #e74c3c;
-            border-color: #e74c3c;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
+
         .btn-primary:hover {
-            background-color: #c0392b;
-            border-color: #c0392b;
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
         }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
         .winner-message h2 {
             color: #f1c40f;
+            text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
         }
-        #timeRemaining {
-            font-weight: bold;
 
+        .text-success {
+            color: #4ecdc4 !important;
+        }
 
+        .text-warning {
+            color: #f1c40f !important;
+        }
+
+        .text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .bg-dark {
+            background: rgba(15, 15, 26, 0.8) !important;
+        }
+
+        .text-light {
+            color: #e0e0e0 !important;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #e0e0e0;
+        }
+
+        .modal-header {
+            background: rgba(15, 15, 26, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .modal-title {
-            color : black;
+            color: #e0e0e0;
             font-weight: bold;
+        }
+
+        .modal-body {
+            background: rgba(26, 26, 46, 0.5);
+            color: #e0e0e0 !important;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notranslate {
+            background: rgba(15, 15, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .char {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+            padding: 0 1px;
+        }
+        
+        .char.correct {
+            color: #6c757d !important;
+            opacity: 0.5;
+        }
+        
+        .char.current {
+            border-bottom: 3px solid #4ecdc4;
+            animation: blink 1s infinite;
+        }
+        
+        @@keyframes blink {
+            0%, 100% { border-color: #4ecdc4; }
+            50% { border-color: transparent; }
         }
     </style>
 </head>
 <body>
+<div class="bg-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+</div>
 <div class="container py-5">
     @if (ViewBag.Winner != null)
     {
@@ -92,14 +287,11 @@
             <div class="col-md-6">
                 <div class="card p-4 shadow">
                     <h3><i class="fa-solid fa-quote-left"></i> Phrase à taper :</h3>
-                    <div class="notranslate">
-                        <p class="bg-dark text-light p-3 rounded"><strong>@Model.TextToType</strong></p>
+                    <div class="notranslate position-relative" id="game-area" style="cursor: text;">
+                        <div id="text-display" class="bg-dark text-light p-3 rounded" style="min-height: 60px; word-wrap: break-word;"></div>
+                        <input type="text" id="hiddenInput" style="opacity: 0; position: absolute; top: 0; left: 0; height: 100%; width: 100%; cursor: default; z-index: 10;" autocomplete="off" spellcheck="false">
                     </div>
-
-                    <div class="input-group mt-4">
-                        <span class="input-group-text bg-dark text-light"><i class="fa-solid fa-keyboard"></i></span>
-                        <input type="text" id="typingInput" class="form-control" placeholder="Commencez à taper..." oninput="updateProgressPlayers()">
-                    </div>
+                    <p class="text-muted mt-2 small text-center"><i class="fa-solid fa-keyboard"></i> Tapez le texte ci-dessus. Le curseur n'avance que si la lettre est correcte.</p>
 
                     <h3 class="mt-4"><i class="fa-solid fa-id-badge"></i> Nom du joueur actuel :</h3>
                     <p class="text-center fs-5"><strong>@currentPlayer</strong></p>
@@ -126,13 +318,6 @@
                             <p class="text-success">Le jeu a commencé ! Tapez pour gagner !</p>
                         }
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-2 text-end">
-                <h3><i class="fa-solid fa-clock"></i> Temps restant :</h3>
-                <div>
-                    <span class="notranslate fs-2 fw-bold text-danger" translate="no" id="timer">60</span> secondes
                 </div>
             </div>
         </div>
@@ -164,143 +349,162 @@
 </div>
 
 
-     <script>
-        document.getElementById('confirmEndGameButton').addEventListener('click', function () {
-        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-        confirmModal.hide();
-
-        const progress = @Html.Raw(Json.Serialize(Model.Progress));
-                    let maxProgress = 0;
-                    let winner = null;
-
-                    for (const player in progress) {
-                        if (player !== '@currentPlayer' && progress[player] > maxProgress) {
-                            maxProgress = progress[player];
-                            winner = player;
-                        }
-                    }
-
-                    localStorage.setItem("podium", JSON.stringify(progress));
-                    localStorage.setItem("winner", winner);
-
-                    connection.invoke("NotifyGameOver", '@lobbyId', winner)
-                        .catch(err => console.error("Erreur lors de la notification de fin de partie :", err));
-
-                    window.location.href = "/SpeedTyping/GameOver?id=" + '@lobbyId';
-                });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
     <script>
+        // --- Configuration ---
+        const lobbyId = '@lobbyId';
+        const currentPlayer = '@currentPlayer';
+        
+        // --- SignalR Connection ---
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/speedTypingHub")
+            .withAutomaticReconnect()
+            .build();
 
-
-        let timeRemaining = 60;
-
-
-        function updateTimer() {
-            if (timeRemaining > 0) {
-                timeRemaining--; 
-                document.getElementById('timer').innerText = timeRemaining; 
-            }
-            if (timeRemaining <= 10) {
-                document.getElementById('timer').style.color = 'red';
-            } 
-            if (timeRemaining === 0) {
-                clearInterval(timerInterval); 
-                gameEnded = true
-                connection.invoke("NotifyGameOver", '@lobbyId')
-                    .catch(err => console.error("Erreur lors de la notification de fin de partie :", err));
-            }
-        }
-
-        const timerInterval = setInterval(updateTimer, 1000);
-
-
-
-    function updateProgressPlayers() {
-    const playerInput = document.getElementById('typingInput').value;
-    const progress = calculateProgress(playerInput);
-
-    document.getElementById('playerProgress').textContent = `${progress}%`;
-
-    connection.invoke("UpdatePlayerProgress", '@lobbyId', '@currentPlayer', parseFloat(progress))
-        .then(() => {
-            if (parseFloat(progress) === 100) {
-                connection.invoke("NotifyGameOver", '@lobbyId')
-                    .catch(err => console.error("Erreur lors de la fin de la partie :", err));
-            }
-        })
-        .catch(err => console.error("Erreur lors de UpdatePlayerProgress :", err));
-
-    }
-
-
+        // --- Game Logic ---
         function decodeHtml(html) {
             const txt = document.createElement("textarea");
             txt.innerHTML = html;
             return txt.value;
         }
 
-        function calculateProgress(input) {
-            let targetText = decodeHtml('@Model.TextToType');
-            targetText = targetText.normalize('NFD').replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-            input = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        const rawText = decodeHtml('@Model.TextToType');
+        const textToType = rawText.trim(); 
+        let currentIndex = 0;
 
-            let correctChars = 0;
-            for (let i = 0; i < input.length; i++) {
-                if (i < targetText.length && input[i] === targetText[i]) {
-                    correctChars++;
-                } else {
-                    break;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup Game Board
+            const display = document.getElementById('text-display');
+            if (display) {
+                display.innerHTML = '';
+                for (let i = 0; i < textToType.length; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = textToType[i];
+                    span.className = 'char';
+                    display.appendChild(span);
+                }
+                updateCursor();
+                
+                const hiddenInput = document.getElementById('hiddenInput');
+                if(hiddenInput) {
+                    hiddenInput.focus();
+                    hiddenInput.addEventListener('input', handleInput);
+                    
+                    // Keep focus
+                    hiddenInput.addEventListener('blur', () => {
+                        setTimeout(() => hiddenInput.focus(), 10);
+                    });
+                    
+                    document.getElementById('game-area').addEventListener('click', () => hiddenInput.focus());
                 }
             }
 
-            const progress = Math.min((correctChars / targetText.length) * 100, 100);
-            return progress.toFixed(2);
+            // Setup End Game Button
+            const endGameBtn = document.getElementById('confirmEndGameButton');
+            if (endGameBtn) {
+                endGameBtn.addEventListener('click', function () {
+                    var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                    confirmModal.hide();
+
+                    connection.invoke("NotifyGameOver", lobbyId)
+                        .catch(err => {
+                            console.error("Erreur lors de la notification de fin de partie :", err);
+                            alert("Impossible de terminer la partie. Vérifiez votre connexion.");
+                        });
+                });
+            }
+        });
+
+        function updateCursor() {
+            const chars = document.querySelectorAll('.char');
+            chars.forEach(c => c.classList.remove('current'));
+            if (currentIndex < chars.length) {
+                chars[currentIndex].classList.add('current');
+            }
         }
 
+        function handleInput(e) {
+            const input = e.target;
+            const val = input.value;
+            if (!val) return;
+            
+            for (let char of val) {
+                if (currentIndex >= textToType.length) break;
+                
+                const targetChar = textToType[currentIndex];
+                if (isMatch(char, targetChar)) {
+                    const chars = document.querySelectorAll('.char');
+                    chars[currentIndex].classList.add('correct');
+                    currentIndex++;
+                }
+            }
+            
+            updateCursor();
+            input.value = ''; 
+            
+            const progress = (currentIndex / textToType.length) * 100;
+            sendProgress(progress);
+        }
 
+        function isMatch(inputChar, targetChar) {
+            return inputChar.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() === 
+                   targetChar.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
 
+        function sendProgress(progress) {
+            const formattedProgress = progress.toFixed(2);
+            
+            // Update local big display immediately
+            const localDisplay = document.getElementById('playerProgress');
+            if (localDisplay) localDisplay.textContent = `${formattedProgress}%`;
 
+            if (connection.state === signalR.HubConnectionState.Connected) {
+                connection.invoke("UpdatePlayerProgress", lobbyId, currentPlayer, parseFloat(formattedProgress))
+                    .then(() => {
+                        if (progress >= 100) {
+                            connection.invoke("NotifyGameOver", lobbyId)
+                                .catch(err => console.error("Erreur lors de la fin de la partie :", err));
+                        }
+                    })
+                    .catch(err => console.error("Erreur lors de UpdatePlayerProgress :", err));
+            } else {
+                console.warn("Connection not ready, cannot send progress.");
+            }
+        }
 
-    </script>
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/speedTypingHub")
-            .build();
-
+        // --- SignalR Events ---
         connection.on("PlayerProgressUpdated", (playerName, progress) => {
+            console.log(`Progress update: ${playerName} -> ${progress}%`);
+            
+            // Update the list item badge
             const progressElement = document.getElementById(`progress-${playerName}`);
             if (progressElement) {
-                console.log(progressElement)
-                progressElement.textContent = `${progress.toFixed(2)}%`;
+                progressElement.textContent = `${progress.toFixed(0)}%`;
+            } else {
+                console.warn(`Element progress-${playerName} not found!`);
             }
         });
-
-        connection.start().then(() => {
-            connection.invoke("JoinLobby", '@lobbyId', '@currentPlayer')
-                .catch(err => console.error(err.toString()));
-        }).catch(err => console.error(err.toString()));
-
-        connection.onclose(async (error) => {
-            console.error("Connexion perdue. Tentative de reconnexion...");
-            try {
-                await connection.start();
-                await connection.invoke("JoinLobby", '@lobbyId', '@currentPlayer');
-            } catch (err) {
-                console.error("Impossible de reconnecter :", err);
-            }
-        });
-
 
         connection.on("EndGame", (data) => {
-        console.log("Fin de la partie. Données reçues :", data);
+            console.log("Fin de la partie. Données reçues :", data);
+            localStorage.setItem("podium", JSON.stringify(data.podium));
+            localStorage.setItem("winner", data.winner);
+            window.location.href = "/SpeedTyping/GameOver?id=" + lobbyId;
+        });
 
-        localStorage.setItem("podium", JSON.stringify(data.podium));
-        localStorage.setItem("winner", data.winner);
-        window.location.href = "/SpeedTyping/GameOver?id=" + '@lobbyId';
-    });
+        // --- Start Connection ---
+        async function startConnection() {
+            try {
+                await connection.start();
+                console.log("SignalR Connected.");
+                await connection.invoke("JoinLobby", lobbyId, currentPlayer);
+            } catch (err) {
+                console.error("SignalR Connection Error: ", err);
+                setTimeout(startConnection, 5000);
+            }
+        }
 
+        startConnection();
 
     </script>
     <script>

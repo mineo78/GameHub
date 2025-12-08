@@ -8,31 +8,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lobby - Speed Typing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2) { left: 20%; animation-delay: -2s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(3) { left: 40%; animation-delay: -4s; }
+        .particle:nth-child(4) { left: 60%; animation-delay: -6s; background: rgba(78, 205, 196, 0.3); }
+        .particle:nth-child(5) { left: 80%; animation-delay: -8s; }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        h1, h3 {
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .text-warning {
+            color: #4ecdc4 !important;
+        }
+
+        .text-muted {
+            color: rgba(224, 224, 224, 0.6) !important;
+        }
+
+        .alert {
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 12px;
+            color: #4ecdc4;
+        }
+
+        .alert-danger {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
         }
 
         .card {
-            background-color: #34495e;
-            color: #ecf0f1;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #e0e0e0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .list-group-item {
+            background: rgba(15, 15, 26, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            padding: 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+        }
+
+        .input-group-text {
+            background: rgba(15, 15, 26, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: #4ecdc4;
+        }
+
+        .form-control {
+            background: rgba(15, 15, 26, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #e0e0e0;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(15, 15, 26, 0.8);
+            border-color: #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            color: #e0e0e0;
+        }
+
+        .form-control::placeholder {
+            color: rgba(224, 224, 224, 0.5);
         }
 
         .btn-primary {
-            background-color: #e74c3c;
-            border-color: #e74c3c;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
-            .btn-primary:hover {
-                background-color: #c0392b;
-                border-color: #c0392b;
-            }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4ecdc4, #44a3a0);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #44a3a0, #3d9996);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #e0e0e0;
+        }
+
+        .modal-header {
+            background: rgba(15, 15, 26, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            background: rgba(26, 26, 46, 0.5);
+            color: #e0e0e0 !important;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
     <div class="container py-5">
         <div class="text-center mb-5">
             <h1 class="text-warning">Bienvenue au Lobby de @Model.Host</h1>
@@ -144,6 +324,11 @@
                 listItem.innerHTML = `<i class="fa-solid fa-user"></i> ${playerName}`;
                 playerList.appendChild(listItem);
             }
+        });
+
+        // Gérer les erreurs du serveur
+        connection.on("Error", (errorMessage) => {
+            alert(errorMessage);
         });
 
         connection.on("GameStarted", (players) => {
