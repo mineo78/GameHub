@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<GamingPlatform.Services.LobbyService>();
 builder.Services.AddSingleton<GamingPlatform.Hubs.Morpion.GameState>();
 builder.Services.AddSingleton<GamingPlatform.Hubs.Puissance4.GameState>();
 

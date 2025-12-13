@@ -81,14 +81,33 @@ namespace GamingPlatform.Hubs.Morpion
                 player.Name.Equals(username, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task<Game> CreateGame(Player firstPlayer, Player secondPlayer)
+        private readonly ConcurrentDictionary<string, Player> _lobbyWaiting = new();
+
+        public Player RegisterLobbyPlayer(string lobbyId, Player player)
         {
-            var game = new Game(firstPlayer, secondPlayer);
+            if (_lobbyWaiting.TryRemove(lobbyId, out var opponent))
+            {
+                return opponent;
+            }
+            _lobbyWaiting.TryAdd(lobbyId, player);
+            return null;
+        }
+
+        public async Task<Game> CreateGame(Player firstPlayer, Player secondPlayer, string gameId = null)
+        {
+            var game = new Game(firstPlayer, secondPlayer, gameId);
+            
             games[game.Id] = game;
 
             await _hubContext.Groups.AddToGroupAsync(firstPlayer.Id, game.Id);
             await _hubContext.Groups.AddToGroupAsync(secondPlayer.Id, game.Id);
 
+            return game;
+        }
+
+        public Game GetGame(string gameId)
+        {
+            games.TryGetValue(gameId, out var game);
             return game;
         }
 

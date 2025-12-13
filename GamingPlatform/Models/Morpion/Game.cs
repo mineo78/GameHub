@@ -16,11 +16,11 @@ namespace GamingPlatform.Models.Morpion
         /// </summary>
         /// <param name="player1">The first player to join the game.</param>
         /// <param name="player2">The second player to join the game.</param>
-        public Game(Player player1, Player player2)
+        public Game(Player player1, Player player2, string gameId = null)
         {
             this.Player1 = player1;
             this.Player2 = player2;
-            this.Id = Guid.NewGuid().ToString("d");
+            this.Id = gameId ?? Guid.NewGuid().ToString("d");
             this.Board = new Board();
 
             this.isFirstPlayersTurn = true;

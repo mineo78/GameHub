@@ -1,65 +1,61 @@
-using GamePlateforme.Models;
+using GamingPlatform.Models;
+using GamingPlatform.Services;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace GamingPlatform.Hubs
 {
     public class LobbyHub : Hub
     {
-        private static List<Lobby> _lobbies = new(); // Liste des lobbys
+        private readonly LobbyService _lobbyService;
 
-        // Récupère tous les lobbys disponibles
-        public Task<List<Lobby>> GetLobbies()
+        public LobbyHub(LobbyService lobbyService)
         {
-            return Task.FromResult(_lobbies);
+            _lobbyService = lobbyService;
         }
 
-        // Crée un nouveau lobby
-        public async Task CreateLobby(string lobbyName, string playerName)
+        public async Task JoinLobbyGroup(string lobbyId)
         {
-            var lobby = new Lobby
-            {
-                Name = lobbyName,
-                Players = new List<string> { playerName },
-                IsStarted = false
-            };
-            _lobbies.Add(lobby);
-
-            // Ajouter le créateur au groupe SignalR correspondant au lobby
-            await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
-
-            // Notifie tous les clients que la liste des lobbys a changé
-            await Clients.All.SendAsync("UpdateLobbyList", _lobbies);
+            await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
         }
 
-        // Permet à un joueur de rejoindre un lobby
-        public async Task JoinLobby(string lobbyName, string playerName)
+        public async Task LeaveLobbyGroup(string lobbyId)
         {
-            var lobby = _lobbies.FirstOrDefault(l => l.Name == lobbyName);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
+        }
+        
+        public async Task StartGame(string lobbyId)
+        {
+            var lobby = _lobbyService.GetLobby(lobbyId);
+            if (lobby == null) return;
 
-            if (lobby == null)
+            // Initialiser le GameState selon le type de jeu
+            if (lobby.GameType == "SpeedTyping" && lobby.GameState == null)
             {
-                await Clients.Caller.SendAsync("Error", "Lobby introuvable !");
-                return;
-            }
-
-            if (lobby.Players.Count < 2)
-            {
-                lobby.Players.Add(playerName);
-                await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
-                await Clients.Group(lobbyName).SendAsync("UpdateLobbyPlayers", lobby.Players);
-
-                if (lobby.Players.Count == 2)
+                var speedTypingGame = new Models.SpeedTypingGame(lobby.HostName);
+                foreach (var player in lobby.Players)
                 {
-                    lobby.IsStarted = true;
-                    await Clients.Group(lobbyName).SendAsync("GameReady", lobby.Name);
+                    speedTypingGame.Players.Add(player);
                 }
+                lobby.GameState = speedTypingGame;
             }
-            else
+            else if (lobby.GameType == "Puissance4" && lobby.GameState == null)
             {
-                await Clients.Caller.SendAsync("Error", "Le lobby est déjà plein !");
+                if (lobby.Players.Count < 2)
+                {
+                    await Clients.Caller.SendAsync("Error", "Il faut 2 joueurs pour Puissance4");
+                    return;
+                }
+
+                var player1 = new Models.Puissance4.Player(lobby.Players[0], lobby.Players[0]);
+                var player2 = new Models.Puissance4.Player(lobby.Players[1], lobby.Players[1]);
+                var game = new Models.Puissance4.Game(player1, player2);
+                lobby.GameState = game;
+            }
+
+            if (_lobbyService.StartGame(lobbyId))
+            {
+                await Clients.Group(lobbyId).SendAsync("GameStarted", lobby.GameType);
             }
         }
     }

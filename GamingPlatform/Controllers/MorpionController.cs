@@ -9,9 +9,16 @@ namespace GamingPlatform.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Lobby", new { gameType = "Morpion" });
         }
 
+        [Route("Morpion/Game/{lobbyId}/{playerName}")]
+        public IActionResult Game(string lobbyId, string playerName)
+        {
+            ViewBag.LobbyId = lobbyId;
+            ViewBag.PlayerName = playerName;
+            return View("Game2");
+        }
     }
 }
 
