@@ -1,12 +1,11 @@
-﻿@model Dictionary<string, GamingPlatform.Models.SpeedTypingGame>
- 
+﻿@model IEnumerable<GamingPlatform.Models.GameLobby>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des lobbys</title>
+    <title>Speed Typing - Lobbies</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -175,76 +174,67 @@
             <p class="lead">Rejoignez un lobby existant ou créez-en un nouveau pour commencer à jouer.</p>
         </div>
 
-        <!-- Lobby List -->
-        <div class="card shadow mb-5">
-            <div class="card-body">
-                <h2 class="card-title"><i class="fa-solid fa-list"></i> Lobbys disponibles</h2>
-                <ul id="lobbyList" class="list-group mt-3">
-                    @foreach (var lobby in Model)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="@Url.Action("Lobby","SpeedTyping", new { id = lobby.Key })" class="text-decoration-none text-primary">
-                                <i class="fa-solid fa-door-open"></i> Lobby @lobby.Key
-                            </a>
-                            <span class="badge bg-success">Host: @lobby.Value.Host</span>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-
-        <!-- Create Lobby -->
-        <div class="card shadow mb-5">
-            <div class="card-body">
-                <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> Créer un nouveau lobby</h2>
-                <form method="post" action="@Url.Action("CreateLobby", "SpeedTyping")" class="mt-4">
-                    <div class="mb-3">
-                        <label for="hostName" class="form-label">Nom du lobby :</label>
-                        <input type="text" id="hostName" name="host" class="form-control" placeholder="Entrez un nom" required>
+        <div class="row">
+            <!-- Create Lobby -->
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> Créer une partie</h2>
+                        <form method="post" action="@Url.Action("Create", "Lobby")" class="mt-4">
+                            <input type="hidden" name="gameType" value="SpeedTyping" />
+                            <div class="mb-3">
+                                <label for="lobbyName" class="form-label">Nom de la partie :</label>
+                                <input type="text" id="lobbyName" name="name" class="form-control" placeholder="Ex: Partie rapide" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="playerName" class="form-label">Votre pseudo :</label>
+                                <input type="text" id="playerName" name="playerName" class="form-control" placeholder="Entrez votre pseudo" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fa-solid fa-check"></i> Créer
+                            </button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-check"></i> Créer
-                    </button>
-                </form>
-                @if (ViewData["ErrorMessage"] != null)
-                {
-                    <p class="text-danger mt-3"><i class="fa-solid fa-exclamation-circle"></i> @ViewData["ErrorMessage"]</p>
-                }
+                </div>
+            </div>
+
+            <!-- Lobby List -->
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title"><i class="fa-solid fa-list"></i> Parties disponibles</h2>
+                        @if (!Model.Any())
+                        {
+                            <p class="text-muted mt-3">Aucune partie disponible.</p>
+                        }
+                        else
+                        {
+                            <ul id="lobbyList" class="list-group mt-3">
+                                @foreach (var lobby in Model)
+                                {
+                                    <li class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1">@lobby.Name</h5>
+                                                <small>Hôte: @lobby.HostName | Joueurs: @lobby.Players.Count/@lobby.MaxPlayers</small>
+                                            </div>
+                                            <form method="post" action="@Url.Action("Join", "Lobby")" class="d-flex gap-2">
+                                                <input type="hidden" name="lobbyId" value="@lobby.Id" />
+                                                <input type="text" name="playerName" class="form-control form-control-sm" placeholder="Pseudo" required style="width: 120px;" />
+                                                <button type="submit" class="btn btn-success btn-sm">Rejoindre</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/speedTypingHub")
-            .build();
 
-        connection.start().then(() => {
-            console.log("Connected to SignalR hub.");
-        });
-
-        connection.on("LobbyCreated", (host) => {
-            const lobbyList = document.getElementById("lobbyList");
-            const listItem = document.createElement("li");
-            listItem.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
-
-            const link = document.createElement("a");
-            link.href = `/SpeedTyping/Lobby/${host}`;
-            link.textContent = `Lobby ${host}`;
-            link.classList.add("text-decoration-none", "text-primary");
-
-            const badge = document.createElement("span");
-            badge.classList.add("badge", "bg-success");
-            badge.textContent = `Host: ${host}`;
-
-            listItem.appendChild(link);
-            listItem.appendChild(badge);
-
-            lobbyList.appendChild(listItem);
-            console.log(`Nouveau lobby ajouté : ${host}`);
-        });
-    </script>
 
 </body>
 </html>

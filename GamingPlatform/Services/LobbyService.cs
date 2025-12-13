@@ -25,6 +25,7 @@ namespace GamingPlatform.Services
 
         public GameLobby GetLobby(string lobbyId)
         {
+            if (string.IsNullOrEmpty(lobbyId)) return null;
             _lobbies.TryGetValue(lobbyId, out var lobby);
             return lobby;
         }

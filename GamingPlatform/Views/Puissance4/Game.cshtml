@@ -393,6 +393,12 @@
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         .board-cell.disabled {
             cursor: not-allowed;
             opacity: 0.8;
@@ -504,22 +510,15 @@
 
         <!-- Status Card -->
         <div class="status-card">
-            <p id="status">Entrez votre pseudo pour commencer</p>
+            <p id="status">En attente du démarrage de la partie...</p>
         </div>
 
-        <!-- Username Section -->
-        <div class="username-section" id="usernameSection">
-            <div class="input-wrapper">
-                <span class="icon">👤</span>
-                <input type="text" id="username" placeholder="Votre pseudo..." autofocus />
-            </div>
-            <button id="findGame" class="btn-play">
-                <span class="btn-text">Trouver un adversaire</span>
-                <span>🎮</span>
-            </button>
+        <!-- Username Section (Hidden) -->
+        <div class="username-section hidden" id="usernameSection">
+            <!-- ... -->
         </div>
 
-        <!-- Game Container -->
+        <!-- Game Container (Initially Hidden) -->
         <div id="gameContainer" class="hidden">
             <div class="player-info">
                 <div class="player-tag red">
@@ -547,34 +546,19 @@
 
     <script type="text/javascript">
         $(function () {
-            let playerId;
+            const lobbyId = '@ViewBag.LobbyId';
+            const currentPlayer = '@ViewBag.CurrentPlayer';
             let currentGame = null;
             let myColor = null;
-            let isSearching = false;
 
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/puissance4Hub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
-            connection.on("PlayerJoined", function (player) {
-                playerId = player.id;
-                setStatus("En attente d'un adversaire...", true);
-                setSearchingState(true);
-            });
-
-            connection.on("UsernameTaken", function () {
-                setStatus("Ce pseudo est déjà pris !", false);
-                enableInput();
-            });
-
-            connection.on("WaitingForOpponent", function () {
-                setStatus("En attente d'un adversaire...", true);
-            });
-
             connection.on("GameStart", function (gameData) {
                 currentGame = gameData;
-                myColor = gameData.player1.name === $('#username').val() 
+                myColor = gameData.player1.name === currentPlayer 
                     ? gameData.player1.color 
                     : gameData.player2.color;
 
@@ -611,12 +595,24 @@
                 hideColumnIndicator();
             });
 
-            connection.on("NotYourTurn", function (message) { });
-            connection.on("InvalidMove", function (message) { });
+            connection.on("NotYourTurn", function (message) {
+                setStatus("⚠️ " + message, false);
+                shakeBoard();
+            });
+
+            connection.on("InvalidMove", function (message) {
+                setStatus("⚠️ " + message, false);
+                shakeBoard();
+            });
 
             connection.on("Error", function (message) {
                 setStatus("❌ " + message, false);
             });
+
+            function shakeBoard() {
+                $('#gameBoard').css('animation', 'shake 0.5s');
+                setTimeout(() => $('#gameBoard').css('animation', ''), 500);
+            }
 
             connection.on("OpponentLeft", function (message) {
                 setStatus("😔 " + message, false);
@@ -625,66 +621,10 @@
                 hideColumnIndicator();
             });
 
-            $('#findGame').click(function () {
-                const username = $('#username').val().trim();
-                if (!username) {
-                    shakeInput();
-                    return;
-                }
-
-                disableInput();
-                setSearchingState(true);
-                
-                connection.invoke("FindGame", username).catch(function (err) {
-                    console.error("Error:", err);
-                    enableInput();
-                    setSearchingState(false);
-                });
-            });
-
-            $('#username').keypress(function (e) {
-                if (e.which === 13) {
-                    $('#findGame').click();
-                    return false;
-                }
-            });
-
-            $('#newGameBtn').click(function () {
-                resetGame();
-            });
-
             function setStatus(text, searching) {
                 const status = $('#status');
                 status.html(searching ? text + '<br><div class="loading-dots"><span></span><span></span><span></span></div>' : text);
                 status.toggleClass('highlight', searching);
-            }
-
-            function setSearchingState(searching) {
-                isSearching = searching;
-                const btn = $('#findGame');
-                if (searching) {
-                    btn.find('.btn-text').text('Recherche en cours');
-                } else {
-                    btn.find('.btn-text').text('Trouver un adversaire');
-                }
-            }
-
-            function shakeInput() {
-                const input = $('#username');
-                input.css('animation', 'shake 0.5s');
-                setTimeout(() => input.css('animation', ''), 500);
-            }
-
-            function enableInput() {
-                $('#username').prop('disabled', false);
-                $('#findGame').prop('disabled', false);
-                $('#username').focus();
-                setSearchingState(false);
-            }
-
-            function disableInput() {
-                $('#username').prop('disabled', true);
-                $('#findGame').prop('disabled', true);
             }
 
             function buildBoard(boardData) {
@@ -738,13 +678,16 @@
             }
 
             function placePiece(column) {
-                connection.invoke("PlacePiece", column).catch(function (err) {
+                if (!currentGame) return;
+                
+                connection.invoke("PlacePiece", lobbyId, currentPlayer, parseInt(column)).catch(function (err) {
                     console.error("Error:", err);
+                    setStatus("❌ Erreur de communication", false);
                 });
             }
 
             function updateStatus(currentPlayerName) {
-                const isMyTurn = ($('#username').val() === currentPlayerName);
+                const isMyTurn = (currentPlayer === currentPlayerName);
                 const emoji = currentPlayerName === currentGame.player1.name ? "🔴" : "🟢";
                 
                 if (isMyTurn) {
@@ -758,21 +701,13 @@
                 $('.board-cell').addClass('disabled').off('click').off('mouseenter mouseleave');
             }
 
-            function resetGame() {
-                $('#gameContainer').addClass('hidden');
-                $('#usernameSection').removeClass('hidden');
-                $('#newGameBtn').addClass('hidden');
-                $('#username').val('');
-                $('#gameBoard').empty();
-                $('#columnIndicator').empty();
-                enableInput();
-                currentGame = null;
-                myColor = null;
-                setStatus("Entrez votre pseudo pour commencer", false);
-            }
-
             connection.start().then(function () {
-                enableInput();
+                console.log("Connected to Puissance4Hub");
+                connection.invoke("JoinLobbyGroup", lobbyId).then(() => {
+                    // Demander l'état initial du jeu
+                    // Note: Le jeu est déjà démarré par le LobbyHub, donc on attend juste l'event GameStart
+                    // ou on pourrait demander l'état actuel si on arrive en retard
+                });
             }).catch(function (err) {
                 setStatus("❌ Erreur de connexion", false);
             });

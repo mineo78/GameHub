@@ -32,7 +32,9 @@ namespace GamingPlatform.Controllers
                 return RedirectToAction("Index", new { gameType });
             }
 
-            var lobby = _lobbyService.CreateLobby(name, playerName, gameType);
+            // SpeedTyping peut avoir plus de joueurs
+            int maxPlayers = gameType == "SpeedTyping" ? 10 : 2;
+            var lobby = _lobbyService.CreateLobby(name, playerName, gameType, maxPlayers);
             
             // Set session
             HttpContext.Session.SetString("PlayerName", playerName);

@@ -1,83 +1,55 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using GamePlateforme.Models;
-using GamingPlatform.Hubs;
+using GamingPlatform.Services;
 
 namespace GamingPlatform.Controllers
 {
     public class Puissance4Controller : Controller
     {
-        private readonly ILogger<Puissance4Controller> _logger;
+        private readonly LobbyService _lobbyService;
 
-        public Puissance4Controller(ILogger<Puissance4Controller> logger)
+        public Puissance4Controller(LobbyService lobbyService)
         {
-            _logger = logger;
+            _lobbyService = lobbyService;
         }
 
-        // Page d'accueil (accueil des joueurs pour la création et la jonction de lobbys)
+        // Page d'accueil - Liste des lobbies Puissance4
         public IActionResult Index()
         {
-            return View();
+            var lobbies = _lobbyService.GetLobbies("Puissance4");
+            return View(lobbies);
         }
 
         // Afficher la page de jeu
-        public IActionResult Game()
+        public IActionResult Game(string id)
         {
-            return View();
-        }
-
-        // Afficher le lobby de jeu (legacy - peut être supprimé si non utilisé)
-        public IActionResult Lobby(string lobbyName)
-        {
-            if (string.IsNullOrEmpty(lobbyName))
+            if (string.IsNullOrEmpty(id))
             {
                 return RedirectToAction("Index");
             }
 
-            // Passer les informations du lobby à la vue
-            ViewBag.LobbyName = lobbyName;
-            return View();
-        }
-
-        // Accéder au jeu (legacy - peut être supprimé si non utilisé)
-        public IActionResult Puissance4(string lobby, string player)
-        {
-            ViewBag.LobbyName = lobby;
-            ViewBag.PlayerName = player;
-            return View();
-        }
-
-        // Créer un lobby
-        [HttpPost]
-        public IActionResult CreateLobby(string lobbyName, string playerName)
-        {
-            if (string.IsNullOrEmpty(lobbyName) || string.IsNullOrEmpty(playerName))
+            var lobby = _lobbyService.GetLobby(id);
+            if (lobby == null)
             {
+                return NotFound("Lobby introuvable.");
+            }
+
+            if (!lobby.IsStarted)
+            {
+                TempData["Message"] = "Le jeu n'a pas encore démarré.";
                 return RedirectToAction("Index");
             }
 
-            // Créer un nouveau lobby et rediriger vers le lobby
-            return RedirectToAction("Lobby", new { lobbyName });
-        }
+            var currentPlayer = HttpContext.Session.GetString("PlayerName");
+            if (string.IsNullOrEmpty(currentPlayer) || !lobby.Players.Contains(currentPlayer))
+            {
+                TempData["Message"] = "Vous n'êtes pas autorisé à accéder à ce jeu.";
+                return RedirectToAction("Index");
+            }
 
-        // Rejoindre un lobby
-        [HttpPost]
-public IActionResult JoinLobby(string lobbyName, string playerName)
-{
-    if (string.IsNullOrEmpty(lobbyName) || string.IsNullOrEmpty(playerName))
-    {
-        return RedirectToAction("Index");
-    }
+            ViewBag.CurrentPlayer = currentPlayer;
+            ViewBag.LobbyId = id;
+            ViewBag.Lobby = lobby;
 
-    // Vérifiez si le lobby existe
-    // Redirigez vers la page de jeu avec les bons paramètres
-    return RedirectToAction("Puissance4", new { lobby = lobbyName, player = playerName });
-}
-
-
-        // Page de confidentialité
-        public IActionResult Privacy()
-        {
             return View();
         }
     }
