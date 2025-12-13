@@ -434,8 +434,7 @@
         }
 
         function isMatch(inputChar, targetChar) {
-            return inputChar.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() === 
-                   targetChar.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            return inputChar === targetChar;
         }
 
         function sendProgress(progress) {
