@@ -63,33 +63,34 @@
         .container {
             position: relative;
             z-index: 1;
-            padding: 40px 20px;
+            padding: 20px 10px;
         }
 
         h2, h3 {
             background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
         }
 
         .card {
             background: rgba(26, 26, 46, 0.8);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            border-radius: 12px;
             color: #e0e0e0;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            padding: 20px;
+            padding: 15px;
         }
 
         .list-group-item {
             background: rgba(15, 15, 26, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e0e0e0;
-            padding: 16px;
-            margin-bottom: 8px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
         }
 
         .badge {
@@ -258,94 +259,80 @@
     }
     else
     {
-        <div class="row">
-            <div class="col-md-4">
-                <h3><i class="fa-solid fa-users"></i> Progression des joueurs :</h3>
-                @if (Model.Players != null && Model.Players.Any())
-                {
-                    <ul class="list-group list-group-flush mt-3">
-                        @foreach (var player in Model.Players)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fa-solid fa-user"></i> @player</span>
-                                <span id="progress-@player" class="badge bg-primary">
-                                    @if (Model.Progress != null && Model.Progress.ContainsKey(player))
-                                    {
-                                        @($"{Model.Progress[player]}%")
-                                    }
-                                    else
-                                    {
-                                        @("0%")
-                                    }
-                                </span>
-                            </li>
-                        }
-                    </ul>
-                }
+        <!-- Top Info Bar -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card p-2 shadow">
+                    <div class="d-flex justify-content-around align-items-center flex-wrap">
+                        <div class="d-flex align-items-center">
+                            <h5 class="mb-0 me-2"><i class="fa-solid fa-id-badge"></i> Joueur :</h5>
+                            <span class="fs-5 fw-bold text-primary">@currentPlayer</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <h5 class="mb-0 me-2"><i class="fa-solid fa-user"></i> Progression :</h5>
+                            <span id="playerProgress" class="fs-5 fw-bold text-success">
+                                @if (Model.Progress != null && Model.Progress.ContainsKey(currentPlayer))
+                                {
+                                    @($"{Model.Progress[currentPlayer]}%")
+                                }
+                                else
+                                {
+                                    @("0 %")
+                                }
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="col-md-6">
-                <div class="card p-4 shadow">
-                    <h3><i class="fa-solid fa-quote-left"></i> Phrase à taper :</h3>
+        <!-- Main Game Area - Full Width -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card p-3 shadow">
+                    <h4 class="mb-2"><i class="fa-solid fa-quote-left"></i> Phrase à taper :</h4>
                     <div class="notranslate position-relative" id="game-area" style="cursor: text;">
-                        <div id="text-display" class="bg-dark text-light p-3 rounded" style="min-height: 60px; word-wrap: break-word;"></div>
+                        <div id="text-display" class="bg-dark text-light p-2 rounded" style="min-height: 100px; font-size: 1.3rem; word-wrap: break-word;"></div>
                         <input type="text" id="hiddenInput" style="opacity: 0; position: absolute; top: 0; left: 0; height: 100%; width: 100%; cursor: default; z-index: 10;" autocomplete="off" spellcheck="false">
                     </div>
-                    <p class="text-muted mt-2 small text-center"><i class="fa-solid fa-keyboard"></i> Tapez le texte ci-dessus. Le curseur n'avance que si la lettre est correcte.</p>
+                    <p class="text-muted mt-1 small text-center"><i class="fa-solid fa-keyboard"></i> Tapez le texte ci-dessus.</p>
+                </div>
+            </div>
+        </div>
 
-                    <h3 class="mt-4"><i class="fa-solid fa-id-badge"></i> Nom du joueur actuel :</h3>
-                    <p class="text-center fs-5"><strong>@currentPlayer</strong></p>
-
-                    <h3 class="mt-4"><i class="fa-solid fa-user"></i> Votre progression :</h3>
-                    <p id="playerProgress" class="text-center fs-4">
-                        @if (Model.Progress != null && Model.Progress.ContainsKey(currentPlayer))
-                        {
-                            @($"{Model.Progress[currentPlayer]}%")
-                        }
-                        else
-                        {
-                            @("0 %")
-                        }
-                    </p>
-
-                    <div id="gameStatus" class="mt-4">
-                        @if (!Model.IsStarted)
-                        {
-                            <p class="text-warning">Le jeu n'a pas encore commencé. Attendez que l'hôte lance la partie.</p>
-                        }
-                        else
-                        {
-                            <p class="text-success">Le jeu a commencé ! Tapez pour gagner !</p>
-                        }
-                    </div>
+        <!-- Player Progress List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card p-3 shadow">
+                    <h4 class="mb-2"><i class="fa-solid fa-users"></i> Progression des joueurs :</h4>
+                    @if (Model.Players != null && Model.Players.Any())
+                    {
+                        <div class="row g-2">
+                            @foreach (var player in Model.Players)
+                            {
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="list-group-item d-flex align-items-center justify-content-start gap-2 py-1 px-2">
+                                        <i class="fa-solid fa-user small"></i>
+                                        <span class="text-truncate flex-grow-1 small">@player</span>
+                                        <span id="progress-@player" class="badge bg-primary small">
+                                            @if (Model.Progress != null && Model.Progress.ContainsKey(player))
+                                            {
+                                                @($"{Model.Progress[player]}%")
+                                            }
+                                            else
+                                            {
+                                                @("0%")
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     }
-
-    <div class="text-center mt-4">
-        <button id="GameOverButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
-            <i class="fa-solid fa-flag-checkered"></i> Fin de la Partie
-        </button>
-
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">Confirmation de fin de partie</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="color: black;">
-                        Êtes-vous sûr de vouloir mettre fin à la partie ? Vous allez perdre et le joueur avec le plus gros score sera désigné comme gagnant.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="confirmEndGameButton">Oui, terminer la partie</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 
@@ -497,7 +484,7 @@
             try {
                 await connection.start();
                 console.log("SignalR Connected.");
-                await connection.invoke("JoinLobby", lobbyId, currentPlayer);
+                await connection.invoke("JoinLobbyGroup", lobbyId);
             } catch (err) {
                 console.error("SignalR Connection Error: ", err);
                 setTimeout(startConnection, 5000);
