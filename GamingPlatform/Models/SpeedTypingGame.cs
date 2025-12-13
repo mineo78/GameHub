@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
+using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -9,7 +9,7 @@ namespace GamingPlatform.Models
 {
     public class SpeedTypingGame
     {
-        // HÙte du jeu
+        // H√¥te du jeu
         public string Host { get; set; }
 
         // Liste des joueurs
@@ -18,11 +18,30 @@ namespace GamingPlatform.Models
         // Progression des joueurs (en pourcentage ou points)
         public Dictionary<string, int> Progress { get; private set; } = new Dictionary<string, int>();
 
-        // Indicateur si le jeu a commencÈ
+        // Indicateur si le jeu a commenc√©
         public bool IsStarted { get; private set; } = false;
 
-        // Texte ‡ taper pour le jeu
-        public string TextToType { get; private set; } = "Welcome to the Speed Typing Game!";
+        // Texte √† taper pour le jeu
+        public string TextToType { get; private set; } = "NOT STARTED";
+
+        private static readonly List<string> FrenchWords = new List<string>
+        {
+            "maison", "chat", "chien", "voiture", "arbre", "soleil", "lune", "√©toile", "mer", "montagne",
+            "rivi√®re", "for√™t", "fleur", "oiseau", "poisson", "ciel", "nuage", "pluie", "neige", "vent",
+            "feu", "terre", "eau", "air", "vie", "amour", "joie", "paix", "libert√©", "espoir",
+            "r√™ve", "voyage", "musique", "art", "livre", "√©cole", "travail", "argent", "temps", "heure",
+            "jour", "nuit", "semaine", "mois", "ann√©e", "si√®cle", "histoire", "monde", "pays", "ville",
+            "rue", "chemin", "porte", "fen√™tre", "table", "chaise", "lit", "chambre", "cuisine", "salle",
+            "jardin", "parc", "place", "march√©", "magasin", "restaurant", "caf√©", "h√¥tel", "banque", "poste",
+            "lettre", "message", "t√©l√©phone", "ordinateur", "internet", "r√©seau", "ami", "famille", "enfant", "parent",
+            "p√®re", "m√®re", "fr√®re", "soeur", "oncle", "tante", "cousin", "grand-p√®re", "grand-m√®re", "voisin",
+            "homme", "femme", "gar√ßon", "fille", "b√©b√©", "adulte", "vieux", "jeune", "grand", "petit",
+            "gros", "mince", "beau", "joli", "laid", "fort", "faible", "rapide", "lent", "intelligent",
+            "rouge", "bleu", "vert", "jaune", "noir", "blanc", "gris", "orange", "violet", "rose",
+            "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix",
+            "manger", "boire", "dormir", "courir", "marcher", "parler", "√©couter", "voir", "regarder", "sentir",
+            "aimer", "d√©tester", "vouloir", "pouvoir", "devoir", "savoir", "conna√Ætre", "penser", "croire", "comprendre"
+        };
 
         // Constructeur
         public SpeedTypingGame(string host)
@@ -40,7 +59,7 @@ namespace GamingPlatform.Models
             }
         }
 
-        // Mettre ‡ jour la progression d'un joueur
+        // Mettre √† jour la progression d'un joueur
         public void UpdateProgress(string player, int progress)
         {
             if (Players.Contains(player) && IsStarted)
@@ -62,7 +81,7 @@ namespace GamingPlatform.Models
             return null; // Aucun message d'erreur, le jeu peut commencer
         }
 
-        // Calculer le score d'un joueur en fonction de l'entrÈe utilisateur
+        // Calculer le score d'un joueur en fonction de l'entr√©e utilisateur
         public int CalculateScore(string player, string userInput)
         {
             if (!Players.Contains(player))
@@ -72,89 +91,45 @@ namespace GamingPlatform.Models
 
             if (!IsStarted)
             {
-                throw new InvalidOperationException("Le jeu n'a pas encore commencÈ.");
+                throw new InvalidOperationException("Le jeu n'a pas encore commenc√©.");
             }
 
-            // Normalisation des chaÓnes pour comparaison insensible aux accents
+            // Normalisation des cha√Ænes pour comparaison insensible aux accents
             string normalizedTextToType = TextToType.Normalize(NormalizationForm.FormD);
             string normalizedUserInput = userInput.Normalize(NormalizationForm.FormD);
 
-            if (string.Compare(normalizedTextToType, normalizedUserInput, CultureInfo.InvariantCulture, CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreCase) == 0)
+            // Comparaison sensible √† la casse (suppression de IgnoreCase)
+            if (string.Compare(normalizedTextToType, normalizedUserInput, CultureInfo.InvariantCulture, CompareOptions.IgnoreNonSpace) == 0)
             {
                 Progress[player] = 100; // 100% pour marquer la fin
-                return 1000; // Score pour avoir terminÈ
+                return 1000; // Score pour avoir termin√©
             }
-            else if (normalizedTextToType.StartsWith(normalizedUserInput, StringComparison.OrdinalIgnoreCase))
+            else if (normalizedTextToType.StartsWith(normalizedUserInput, StringComparison.Ordinal)) // Ordinal est sensible √† la casse
             {
-                return userInput.Length * 10; // Score basÈ sur la longueur correcte
+                return userInput.Length * 10; // Score bas√© sur la longueur correcte
             }
 
-            return 0; // Aucun score si l'entrÈe ne correspond pas
+            return 0; // Aucun score si l'entr√©e ne correspond pas
         }
 
-        // GÈnÈrer un texte alÈatoire ‡ taper
-
+        // G√©n√©rer un texte al√©atoire √† taper
         private void GenerateRandomText()
-    {
-        var sampleTexts = new List<string>
-    {
-        "Le soleil brille aprËs la pluie.",
-        "Un sourire est le plus court chemin vers un cúur.",
-        "La vie est belle quand on sourit.",
-        "Qui vole un úuf vole un búuf.",
-        "C'est en forgeant qu'on devient forgeron.",
-        "Petit ‡ petit, l'oiseau fait son nid.",
-        "Rien ne sert de courir, il faut partir ‡ point.",
-        "Le chat retombe toujours sur ses pattes.",
-        "Mieux vaut tard que jamais.",
-        "Les chiens aboient, la caravane passe.",
-        "Une pomme par jour Èloigne le mÈdecin.",
-        "L'habit ne fait pas le moine.",
-        "¿ cúur vaillant rien d'impossible.",
-        "Un tiens vaut mieux que deux tu l'auras.",
-        "L'arbre cache souvent la forÍt.",
-        "On ne fait pas d'omelette sans casser des úufs.",
-        "La curiositÈ est un vilain dÈfaut.",
-        "Trop de cuisiniers g‚tent la sauce.",
-        "La nuit porte conseil.",
-        "Quand on parle du loup, on en voit la queue.",
-        "Les cordonniers sont les plus mal chaussÈs.",
-        "Il vaut mieux prÈvenir que guÈrir.",
-        "Chassez le naturel, il revient au galop.",
-        "Ce n'est pas la mer ‡ boire.",
-        "L'espoir fait vivre.",
-        "Pierre qui roule n'amasse pas mousse.",
-        "Mieux vaut Ítre seul que mal accompagnÈ.",
-        "Qui ne risque rien n'a rien.",
-        "Un coup de chance peut changer une vie.",
-        "Le travail acharnÈ finit toujours par payer.",
-        "Quand on veut, on peut.",
-        "Il n'y a pas de fumÈe sans feu.",
-        "Le silence est d'or.",
-        "On rÈcolte ce que l'on sËme.",
-        "Chaque chose en son temps.",
-        "Une main lave l'autre.",
-        "Les bons comptes font les bons amis.",
-        "Il n'y a pas de petit profit.",
-        "Les paroles s'envolent, les Ècrits restent.",
-        "La patience est la mËre de toutes les vertus.",
-        "Ne mets pas tous tes úufs dans le mÍme panier.",
-        "Quand le chat n'est pas l‡, les souris dansent.",
-        "Rome ne s'est pas faite en un jour.",
-        "Tout vient ‡ point ‡ qui sait attendre.",
-        "L'argent ne fait pas le bonheur.",
-        "Une Èpine d'expÈrience vaut une forÍt de conseils.",
-        "Fais ce que je dis, pas ce que je fais.",
-        "L'erreur est humaine.",
-        "On n'apprend pas ‡ un vieux singe ‡ faire des grimaces."
-    };
+        {
+            var random = new Random();
+            var selectedWords = new List<string>();
+            int numberOfWords = random.Next(20, 31); // Entre 20 et 30 mots
 
-        var random = new Random();
-        TextToType = HttpUtility.HtmlDecode(sampleTexts[random.Next(sampleTexts.Count)]);
-    }
+            for (int i = 0; i < numberOfWords; i++)
+            {
+                int index = random.Next(FrenchWords.Count);
+                selectedWords.Add(FrenchWords[index]);
+            }
 
-    // Obtenir les joueurs triÈs par progression dÈcroissante
-    public List<KeyValuePair<string, int>> GetLeaderboard()
+            TextToType = string.Join(" ", selectedWords);
+        }
+
+        // Obtenir les joueurs tri√©s par progression d√©croissante
+        public List<KeyValuePair<string, int>> GetLeaderboard()
         {
             return new List<KeyValuePair<string, int>>(Progress.OrderByDescending(p => p.Value));
         }

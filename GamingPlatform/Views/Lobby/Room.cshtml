@@ -103,7 +103,7 @@
             if (type === "Morpion") {
                 window.location.href = `/Morpion/Game/${lobbyId}/${currentPlayer}`;
             } else if (type === "SpeedTyping") {
-                window.location.href = `/SpeedTyping/Game/${lobbyId}`;
+                window.location.href = `/SpeedTyping/Game/${lobbyId}?playerName=${encodeURIComponent(currentPlayer)}`;
             } else if (type === "Puissance4") {
                 window.location.href = `/Puissance4/Game/${lobbyId}/${currentPlayer}`;
             }

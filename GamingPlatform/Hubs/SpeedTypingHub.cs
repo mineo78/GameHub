@@ -151,14 +151,20 @@ namespace GamingPlatform.Hubs
                 throw new InvalidOperationException("GameState invalide.");
             }
 
-            // Déterminer le podium et le vainqueur
-            var podium = speedTypingGame.Progress.OrderByDescending(p => p.Value).Take(3).ToList();
-            var winner = podium.FirstOrDefault().Key;
+            // Déterminer le podium et le vainqueur (inclure tous les joueurs)
+            var allPlayersProgress = lobby.Players.Select(p => new
+            {
+                Player = p,
+                Progress = speedTypingGame.Progress.ContainsKey(p) ? speedTypingGame.Progress[p] : 0
+            }).ToList();
+
+            var podium = allPlayersProgress.OrderByDescending(p => p.Progress).ToList();
+            var winner = podium.FirstOrDefault()?.Player;
 
             // Envoyer les données de fin de partie à tous les joueurs du lobby
             await Clients.Group(lobbyId).SendAsync("EndGame", new
             {
-                Podium = podium.Select(p => new { Player = p.Key, Progress = p.Value }).ToList(),
+                Podium = podium,
                 Winner = winner
             });
 
@@ -180,14 +186,20 @@ namespace GamingPlatform.Hubs
                 throw new InvalidOperationException("GameState invalide.");
             }
 
-            // Déterminer le podium et le vainqueur
-            var podium = speedTypingGame.Progress.OrderByDescending(p => p.Value).Take(3).ToList();
-            var winner = podium.FirstOrDefault().Key;
+            // Déterminer le podium et le vainqueur (inclure tous les joueurs)
+            var allPlayersProgress = lobby.Players.Select(p => new
+            {
+                Player = p,
+                Progress = speedTypingGame.Progress.ContainsKey(p) ? speedTypingGame.Progress[p] : 0
+            }).ToList();
+
+            var podium = allPlayersProgress.OrderByDescending(p => p.Progress).ToList();
+            var winner = podium.FirstOrDefault()?.Player;
 
             // Notifier tous les joueurs de la fin de la partie
             await Clients.Group(lobbyId).SendAsync("EndGame", new
             {
-                Podium = podium.Select(p => new { Player = p.Key, Progress = p.Value }).ToList(),
+                Podium = podium,
                 Winner = winner
             });
 

@@ -30,14 +30,23 @@ namespace GamingPlatform.Hubs
             if (lobby == null) return;
 
             // Initialiser le GameState selon le type de jeu
-            if (lobby.GameType == "SpeedTyping" && lobby.GameState == null)
+            if (lobby.GameType == "SpeedTyping")
             {
-                var speedTypingGame = new Models.SpeedTypingGame(lobby.HostName);
-                foreach (var player in lobby.Players)
+                if (lobby.GameState == null)
                 {
-                    speedTypingGame.Players.Add(player);
+                    var speedTypingGame = new Models.SpeedTypingGame(lobby.HostName);
+                    foreach (var player in lobby.Players)
+                    {
+                        speedTypingGame.Players.Add(player);
+                    }
+                    lobby.GameState = speedTypingGame;
                 }
-                lobby.GameState = speedTypingGame;
+                
+                // Démarrer le jeu SpeedTyping pour générer le texte
+                if (lobby.GameState is Models.SpeedTypingGame game)
+                {
+                    game.StartGame();
+                }
             }
             else if (lobby.GameType == "Puissance4" && lobby.GameState == null)
             {
