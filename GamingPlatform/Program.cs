@@ -13,6 +13,7 @@ builder.Services
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
 builder.Services.AddSingleton<GamingPlatform.Services.LobbyService>();
+builder.Services.AddSingleton<GamingPlatform.Services.GameHistoryService>();
 builder.Services.AddSingleton<GamingPlatform.Hubs.Morpion.GameState>();
 builder.Services.AddSingleton<GamingPlatform.Hubs.Puissance4.GameState>();
 
