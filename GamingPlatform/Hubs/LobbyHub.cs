@@ -2,6 +2,7 @@ using GamingPlatform.Models;
 using GamingPlatform.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace GamingPlatform.Hubs
 {
@@ -22,6 +23,111 @@ namespace GamingPlatform.Hubs
         public async Task LeaveLobbyGroup(string lobbyId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
+        }
+
+        // ========================
+        // REMATCH SYSTEM
+        // ========================
+
+        /// <summary>
+        /// Un joueur demande une revanche (vote pour rejouer)
+        /// </summary>
+        public async Task RequestRematch(string lobbyId, string playerName)
+        {
+            var lobby = _lobbyService.GetLobby(lobbyId);
+            if (lobby == null) return;
+
+            // Ajouter le vote
+            lobby.RematchVotes.Add(playerName);
+
+            // Notifier tout le monde du vote
+            await Clients.Group(lobbyId).SendAsync("RematchVoteReceived", new
+            {
+                playerName = playerName,
+                votesCount = lobby.RematchVotes.Count,
+                totalPlayers = lobby.Players.Count,
+                votes = lobby.RematchVotes.ToList()
+            });
+
+            // Vérifier si tous les joueurs ont accepté
+            if (lobby.RematchVotes.Count == lobby.Players.Count)
+            {
+                await StartRematch(lobbyId);
+            }
+        }
+
+        /// <summary>
+        /// Un joueur refuse la revanche
+        /// </summary>
+        public async Task DeclineRematch(string lobbyId, string playerName)
+        {
+            var lobby = _lobbyService.GetLobby(lobbyId);
+            if (lobby == null) return;
+
+            lobby.RematchDeclined.Add(playerName);
+
+            // Notifier tout le monde
+            await Clients.Group(lobbyId).SendAsync("RematchDeclined", new
+            {
+                playerName = playerName,
+                message = $"{playerName} a refusé la revanche."
+            });
+
+            // Vérifier s'il reste assez de joueurs pour jouer
+            int minPlayers = lobby.GameType == "SpeedTyping" ? 1 : 2;
+            int remainingPlayers = lobby.Players.Count - lobby.RematchDeclined.Count;
+
+            if (remainingPlayers < minPlayers)
+            {
+                // Pas assez de joueurs, retourner au lobby
+                await Clients.Group(lobbyId).SendAsync("ReturnToLobby", new
+                {
+                    reason = "not_enough_players",
+                    message = "Pas assez de joueurs pour rejouer. Retour au lobby."
+                });
+            }
+        }
+
+        /// <summary>
+        /// Retourne tout le monde au lobby (appelé par un joueur ou automatiquement)
+        /// </summary>
+        public async Task ReturnAllToLobby(string lobbyId)
+        {
+            var lobby = _lobbyService.GetLobby(lobbyId);
+            if (lobby == null) return;
+
+            // Reset le lobby pour une nouvelle partie
+            lobby.ResetForRematch();
+
+            await Clients.Group(lobbyId).SendAsync("ReturnToLobby", new
+            {
+                reason = "manual",
+                message = "Retour au lobby."
+            });
+        }
+
+        /// <summary>
+        /// Démarre une nouvelle partie avec les mêmes joueurs
+        /// </summary>
+        private async Task StartRematch(string lobbyId)
+        {
+            var lobby = _lobbyService.GetLobby(lobbyId);
+            if (lobby == null) return;
+
+            // Reset le lobby
+            lobby.ResetForRematch();
+
+            // Notifier tout le monde que la revanche commence
+            await Clients.Group(lobbyId).SendAsync("RematchStarting", new
+            {
+                message = "Tous les joueurs ont accepté ! La revanche commence..."
+            });
+
+            // Attendre un peu pour l'animation
+            await Task.Delay(1500);
+
+            // Rediriger vers la salle d'attente (le host peut relancer)
+            await Clients.Group(lobbyId).SendAsync("GoToRoom", lobbyId);
         }
         
         public async Task StartGame(string lobbyId)

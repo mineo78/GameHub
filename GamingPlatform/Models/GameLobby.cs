@@ -15,5 +15,19 @@ namespace GamingPlatform.Models
         
         // Generic state storage for the game
         public object GameState { get; set; }
+
+        // Rematch system
+        public bool IsGameOver { get; set; } = false;
+        public HashSet<string> RematchVotes { get; set; } = new HashSet<string>();
+        public HashSet<string> RematchDeclined { get; set; } = new HashSet<string>();
+
+        public void ResetForRematch()
+        {
+            IsStarted = false;
+            IsGameOver = false;
+            GameState = null;
+            RematchVotes.Clear();
+            RematchDeclined.Clear();
+        }
     }
 }

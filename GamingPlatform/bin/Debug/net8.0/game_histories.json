@@ -1,0 +1,386 @@
+[
+  {
+    "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+    "LobbyName": "",
+    "GameType": "SpeedTyping",
+    "CreatedAt": "2026-01-11T01:31:19.8786901Z",
+    "EndedAt": null,
+    "Players": [],
+    "Winner": null,
+    "IsTie": false,
+    "Actions": [
+      {
+        "Id": "7cd4b465-cd40-41b2-b003-82e280a19151",
+        "Timestamp": "2026-01-11T01:31:19.8786964Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 0%",
+        "AdditionalData": "{\u0022progress\u0022:0.64}"
+      },
+      {
+        "Id": "a7b69ff5-c04c-4421-b903-1b8a4b4ab6f0",
+        "Timestamp": "2026-01-11T01:31:32.3159004Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "xqxq",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 0%",
+        "AdditionalData": "{\u0022progress\u0022:0.64}"
+      },
+      {
+        "Id": "99fa8a4a-04f9-4f1d-8b55-9fb40b1fd07a",
+        "Timestamp": "2026-01-11T01:31:35.3585485Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "waqs",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 0%",
+        "AdditionalData": "{\u0022progress\u0022:0.64}"
+      },
+      {
+        "Id": "f5e6da1f-6e9d-45dd-bb4d-83a82f9f7537",
+        "Timestamp": "2026-01-11T01:31:38.0164956Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 25%",
+        "AdditionalData": "{\u0022progress\u0022:25.48}"
+      },
+      {
+        "Id": "647d6c26-c5b7-49c6-8684-694ab0773914",
+        "Timestamp": "2026-01-11T01:31:45.1488388Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 50%",
+        "AdditionalData": "{\u0022progress\u0022:50.32}"
+      },
+      {
+        "Id": "a1208038-f5c3-455f-9c0b-f71aa0970914",
+        "Timestamp": "2026-01-11T01:31:45.3948238Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 50%",
+        "AdditionalData": "{\u0022progress\u0022:50.96}"
+      },
+      {
+        "Id": "4a910011-4488-411c-a22f-dafe23a650cf",
+        "Timestamp": "2026-01-11T01:31:52.8877447Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 75%",
+        "AdditionalData": "{\u0022progress\u0022:75.16}"
+      },
+      {
+        "Id": "c429f456-a9fc-4eb8-9029-d828c65cfb3a",
+        "Timestamp": "2026-01-11T01:31:53.0009882Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 75%",
+        "AdditionalData": "{\u0022progress\u0022:75.8}"
+      },
+      {
+        "Id": "461817b8-62e1-4ac1-b523-890e96897387",
+        "Timestamp": "2026-01-11T01:31:59.8401106Z",
+        "LobbyId": "eb71ebbe-b908-46fe-8b0c-e3ae94a1cfe0",
+        "GameType": "SpeedTyping",
+        "PlayerName": "wa",
+        "ActionType": "Progress",
+        "ActionDetails": "Progression: 100%",
+        "AdditionalData": "{\u0022progress\u0022:100}"
+      }
+    ]
+  },
+  {
+    "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+    "LobbyName": "sad",
+    "GameType": "Morpion",
+    "CreatedAt": "2026-01-11T01:05:26.9954567Z",
+    "EndedAt": "2026-01-11T01:07:21.4368047Z",
+    "Players": [
+      "ds",
+      "sa"
+    ],
+    "Winner": "sa",
+    "IsTie": false,
+    "Actions": [
+      {
+        "Id": "7b5d5e75-e5a7-434e-84c8-f6df5e495b11",
+        "Timestamp": "2026-01-11T01:05:26.9958576Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "SYSTEM",
+        "ActionType": "GAME_START",
+        "ActionDetails": "Partie d\u00E9marr\u00E9e avec les joueurs: ds, sa",
+        "AdditionalData": null
+      },
+      {
+        "Id": "ea511c98-c746-477e-a8d0-d5e38710b474",
+        "Timestamp": "2026-01-11T01:05:27.0137147Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "Syst\u00E8me",
+        "ActionType": "GameStart",
+        "ActionDetails": "Partie d\u00E9marr\u00E9e: ds (X) vs sa (O)",
+        "AdditionalData": null
+      },
+      {
+        "Id": "ace14854-3462-4716-b1d9-ec7325f7cc0e",
+        "Timestamp": "2026-01-11T01:05:30.3234717Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "ds",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce X plac\u00E9e en (2, 0)",
+        "AdditionalData": "{\u0022row\u0022:2,\u0022col\u0022:0,\u0022piece\u0022:\u0022X\u0022}"
+      },
+      {
+        "Id": "ca5c83bd-9289-49c7-8abe-08097f60cf1d",
+        "Timestamp": "2026-01-11T01:05:31.076493Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "sa",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce O plac\u00E9e en (2, 1)",
+        "AdditionalData": "{\u0022row\u0022:2,\u0022col\u0022:1,\u0022piece\u0022:\u0022O\u0022}"
+      },
+      {
+        "Id": "b8344364-e879-4163-9637-4a5b932dd172",
+        "Timestamp": "2026-01-11T01:05:33.8091321Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "ds",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce X plac\u00E9e en (1, 0)",
+        "AdditionalData": "{\u0022row\u0022:1,\u0022col\u0022:0,\u0022piece\u0022:\u0022X\u0022}"
+      },
+      {
+        "Id": "f5fd0c89-ad2d-4641-bca0-6d7667196038",
+        "Timestamp": "2026-01-11T01:05:34.7397884Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "sa",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce O plac\u00E9e en (1, 2)",
+        "AdditionalData": "{\u0022row\u0022:1,\u0022col\u0022:2,\u0022piece\u0022:\u0022O\u0022}"
+      },
+      {
+        "Id": "2ca22af5-86c4-4bb2-98d0-525364b432b1",
+        "Timestamp": "2026-01-11T01:07:21.435579Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "ds",
+        "ActionType": "Disconnect",
+        "ActionDetails": "Joueur ds s\u0027est d\u00E9connect\u00E9",
+        "AdditionalData": null
+      },
+      {
+        "Id": "51b5f3d7-8788-4bed-8ef4-1ce757bb6166",
+        "Timestamp": "2026-01-11T01:07:21.4369507Z",
+        "LobbyId": "b01082ad-facd-4719-b1a8-50adf6540aa5",
+        "GameType": "Morpion",
+        "PlayerName": "SYSTEM",
+        "ActionType": "GAME_END",
+        "ActionDetails": "Victoire de sa",
+        "AdditionalData": null
+      }
+    ]
+  },
+  {
+    "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+    "LobbyName": "ssd",
+    "GameType": "Morpion",
+    "CreatedAt": "2026-01-11T01:12:09.6911677Z",
+    "EndedAt": "2026-01-11T01:12:25.841266Z",
+    "Players": [
+      "sadx",
+      "sd"
+    ],
+    "Winner": "sadx",
+    "IsTie": false,
+    "Actions": [
+      {
+        "Id": "f01808eb-052e-4d38-b528-c9caf4f8d692",
+        "Timestamp": "2026-01-11T01:12:09.6914743Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "SYSTEM",
+        "ActionType": "GAME_START",
+        "ActionDetails": "Partie d\u00E9marr\u00E9e avec les joueurs: sadx, sd",
+        "AdditionalData": null
+      },
+      {
+        "Id": "29694d1c-d5ca-4a34-b2db-1380d9cfef8c",
+        "Timestamp": "2026-01-11T01:12:09.7004408Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "Syst\u00E8me",
+        "ActionType": "GameStart",
+        "ActionDetails": "Partie d\u00E9marr\u00E9e: sadx (X) vs sd (O)",
+        "AdditionalData": null
+      },
+      {
+        "Id": "248a4808-1dbe-4ae1-89ba-89c9e043287d",
+        "Timestamp": "2026-01-11T01:12:12.6681021Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "sadx",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce X plac\u00E9e en (2, 0)",
+        "AdditionalData": "{\u0022row\u0022:2,\u0022col\u0022:0,\u0022piece\u0022:\u0022X\u0022}"
+      },
+      {
+        "Id": "b0490f2b-f581-44e0-8e11-da33a3c375a0",
+        "Timestamp": "2026-01-11T01:12:15.0791325Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "sd",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce O plac\u00E9e en (1, 0)",
+        "AdditionalData": "{\u0022row\u0022:1,\u0022col\u0022:0,\u0022piece\u0022:\u0022O\u0022}"
+      },
+      {
+        "Id": "e1455da0-50be-4d11-8f68-35e54346cade",
+        "Timestamp": "2026-01-11T01:12:17.7521887Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "sadx",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce X plac\u00E9e en (1, 1)",
+        "AdditionalData": "{\u0022row\u0022:1,\u0022col\u0022:1,\u0022piece\u0022:\u0022X\u0022}"
+      },
+      {
+        "Id": "3e5c48cd-5964-4628-979a-fea4fe5ba9a8",
+        "Timestamp": "2026-01-11T01:12:19.5602195Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "sd",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce O plac\u00E9e en (0, 0)",
+        "AdditionalData": "{\u0022row\u0022:0,\u0022col\u0022:0,\u0022piece\u0022:\u0022O\u0022}"
+      },
+      {
+        "Id": "7fcf9be4-924a-4eb1-8b39-6159ccbbf9f8",
+        "Timestamp": "2026-01-11T01:12:25.8400096Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "sadx",
+        "ActionType": "PlacePiece",
+        "ActionDetails": "Pi\u00E8ce X plac\u00E9e en (0, 2)",
+        "AdditionalData": "{\u0022row\u0022:0,\u0022col\u0022:2,\u0022piece\u0022:\u0022X\u0022}"
+      },
+      {
+        "Id": "6ff9c9f9-9003-492e-b0e7-7e5ec458369f",
+        "Timestamp": "2026-01-11T01:12:25.8412714Z",
+        "LobbyId": "486e9c78-78ab-44cf-9ce2-981b044776ef",
+        "GameType": "Morpion",
+        "PlayerName": "SYSTEM",
+        "ActionType": "GAME_END",
+        "ActionDetails": "Victoire de sadx",
+        "AdditionalData": null
+      }
+    ]
+  },
+  {
+    "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+    "LobbyName": "",
+    "GameType": "Puissance4",
+    "CreatedAt": "2026-01-11T01:33:19.719311Z",
+    "EndedAt": "2026-01-11T01:33:31.9512654Z",
+    "Players": [],
+    "Winner": "Saif",
+    "IsTie": false,
+    "Actions": [
+      {
+        "Id": "537b66cb-11c4-46f5-9e76-35445f4a8686",
+        "Timestamp": "2026-01-11T01:33:19.7193195Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "Saif",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 3, ligne 6",
+        "AdditionalData": "{\u0022row\u0022:5,\u0022column\u0022:2,\u0022color\u0022:\u0022Rouge\u0022}"
+      },
+      {
+        "Id": "fe06dcb3-6419-4a05-bd9e-6c7b544d3869",
+        "Timestamp": "2026-01-11T01:33:21.1004008Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "sd",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 2, ligne 6",
+        "AdditionalData": "{\u0022row\u0022:5,\u0022column\u0022:1,\u0022color\u0022:\u0022Jaune\u0022}"
+      },
+      {
+        "Id": "4f5dae24-4ef8-4396-b452-bb955c3ce9f0",
+        "Timestamp": "2026-01-11T01:33:24.075235Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "Saif",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 4, ligne 6",
+        "AdditionalData": "{\u0022row\u0022:5,\u0022column\u0022:3,\u0022color\u0022:\u0022Rouge\u0022}"
+      },
+      {
+        "Id": "627876a2-ed22-452f-ae57-dc3daa96afba",
+        "Timestamp": "2026-01-11T01:33:25.8571393Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "sd",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 2, ligne 5",
+        "AdditionalData": "{\u0022row\u0022:4,\u0022column\u0022:1,\u0022color\u0022:\u0022Jaune\u0022}"
+      },
+      {
+        "Id": "6baf215b-0fe9-4d8c-8fcb-9b3303767dcb",
+        "Timestamp": "2026-01-11T01:33:28.5555012Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "Saif",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 5, ligne 6",
+        "AdditionalData": "{\u0022row\u0022:5,\u0022column\u0022:4,\u0022color\u0022:\u0022Rouge\u0022}"
+      },
+      {
+        "Id": "edc4cc0d-cdc3-42d2-a0f7-ef0bca49c96c",
+        "Timestamp": "2026-01-11T01:33:29.6893499Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "sd",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 2, ligne 4",
+        "AdditionalData": "{\u0022row\u0022:3,\u0022column\u0022:1,\u0022color\u0022:\u0022Jaune\u0022}"
+      },
+      {
+        "Id": "3a0309ad-ec04-4401-b7b0-4b5cb46d0ac7",
+        "Timestamp": "2026-01-11T01:33:31.9498945Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "Saif",
+        "ActionType": "PLACE_PIECE",
+        "ActionDetails": "Jeton plac\u00E9 en colonne 6, ligne 6",
+        "AdditionalData": "{\u0022row\u0022:5,\u0022column\u0022:5,\u0022color\u0022:\u0022Rouge\u0022}"
+      },
+      {
+        "Id": "aa666a17-4adf-4002-af5a-c967fda0afbc",
+        "Timestamp": "2026-01-11T01:33:31.951271Z",
+        "LobbyId": "6885fb6e-6b39-465d-a9f0-f942723ab340",
+        "GameType": "Puissance4",
+        "PlayerName": "SYSTEM",
+        "ActionType": "GAME_END",
+        "ActionDetails": "Victoire de Saif",
+        "AdditionalData": null
+      }
+    ]
+  }
+]
