@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Connexion Admin";
+    var error = ViewBag.Error as string;
+}
+<div class="container" style="max-width:400px;margin:60px auto;">
+    <div class="glass-card" style="padding:32px 28px;">
+        <h2 style="text-align:center;color:#4ecdc4;margin-bottom:24px;">
+            <i class="fa-solid fa-user-shield"></i> Connexion Admin
+        </h2>
+        @if (!string.IsNullOrEmpty(error)) {
+            <div class="alert alert-danger">@error</div>
+        }
+        <form method="post" action="/Admin/Login">
+            <div class="mb-3">
+                <label for="adminId" class="form-label">Identifiant</label>
+                <input type="text" class="form-control" id="adminId" name="adminId" required autofocus autocomplete="username">
+            </div>
+            <div class="mb-3">
+                <label for="adminPwd" class="form-label">Mot de passe</label>
+                <input type="password" class="form-control" id="adminPwd" name="adminPwd" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100" style="background:#4ecdc4;border:none;">Se connecter</button>
+        </form>
+    </div>
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.04);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        border: 1px solid rgba(255,255,255,0.13);
+        backdrop-filter: blur(8px);
+    }
+</style>

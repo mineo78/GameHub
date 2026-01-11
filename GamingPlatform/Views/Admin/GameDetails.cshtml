@@ -1,0 +1,296 @@
+@model GamingPlatform.Models.GameHistory
+@{
+    ViewData["Title"] = $"Détails de la partie - {Model.LobbyName}";
+}
+
+@section Styles {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .details-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .details-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .details-header h1 {
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .glass-card h3 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-item label {
+            display: block;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .info-item strong {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #4ecdc4, #ff6b6b);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border-left: 3px solid #4ecdc4;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            border: 2px solid #1a1a2e;
+        }
+
+        .timeline-item.system::before {
+            background: #667eea;
+        }
+
+        .timeline-item.system {
+            border-left-color: #667eea;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+
+        .timeline-player {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .timeline-action {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 0 8px;
+        }
+
+        .timeline-details {
+            color: #e0e0e0;
+            margin-top: 5px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-win { background: rgba(72, 187, 120, 0.2); color: #48bb78; }
+        .badge-tie { background: rgba(237, 137, 54, 0.2); color: #ed8936; }
+        .badge-ongoing { background: rgba(66, 153, 225, 0.2); color: #4299e1; }
+    </style>
+}
+
+<div class="details-container">
+    <div class="actions-bar">
+        <a href="@Url.Action("GameHistory")" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+        </a>
+        <a href="@Url.Action("ExportJson", new { id = Model.LobbyId })" class="btn-export">
+            <i class="fa-solid fa-download"></i> Exporter JSON
+        </a>
+    </div>
+
+    <div class="details-header">
+        <h1><i class="fa-solid fa-gamepad"></i> @Model.LobbyName</h1>
+    </div>
+
+    <!-- Informations générales -->
+    <div class="glass-card">
+        <h3><i class="fa-solid fa-info-circle"></i> Informations de la partie</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Type de jeu</label>
+                <strong>@Model.GameType</strong>
+            </div>
+            <div class="info-item">
+                <label>ID du Lobby</label>
+                <strong style="font-size: 0.85rem;">@Model.LobbyId</strong>
+            </div>
+            <div class="info-item">
+                <label>Date de création</label>
+                <strong>@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</strong>
+            </div>
+            <div class="info-item">
+                <label>Date de fin</label>
+                <strong>@(Model.EndedAt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "En cours")</strong>
+            </div>
+            <div class="info-item">
+                <label>Joueurs</label>
+                <strong>@string.Join(", ", Model.Players)</strong>
+            </div>
+            <div class="info-item">
+                <label>Résultat</label>
+                @if (Model.EndedAt == null)
+                {
+                    <span class="badge badge-ongoing">En cours</span>
+                }
+                else if (Model.IsTie)
+                {
+                    <span class="badge badge-tie">Match nul</span>
+                }
+                else
+                {
+                    <span class="badge badge-win">🏆 @Model.Winner</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline des actions -->
+    <div class="glass-card">
+        <h3><i class="fa-solid fa-list-timeline"></i> Chronologie des actions (@Model.Actions.Count)</h3>
+        
+        @if (!Model.Actions.Any())
+        {
+            <p style="color: #a0aec0; text-align: center; padding: 30px;">Aucune action enregistrée</p>
+        }
+        else
+        {
+            <div class="timeline">
+                @foreach (var action in Model.Actions.OrderBy(a => a.Timestamp))
+                {
+                    var isSystem = action.PlayerName == "SYSTEM";
+                    <div class="timeline-item @(isSystem ? "system" : "")">
+                        <div>
+                            <span class="timeline-time">@action.Timestamp.ToLocalTime().ToString("HH:mm:ss.fff")</span>
+                            <span class="timeline-player">@action.PlayerName</span>
+                            <span class="timeline-action">@action.ActionType</span>
+                        </div>
+                        <div class="timeline-details">@action.ActionDetails</div>
+                        @if (!string.IsNullOrEmpty(action.AdditionalData))
+                        {
+                            <details style="margin-top: 8px;">
+                                <summary style="color: #a0aec0; cursor: pointer; font-size: 0.85rem;">Données supplémentaires</summary>
+                                <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; font-size: 0.8rem; overflow-x: auto; margin-top: 5px;">@action.AdditionalData</pre>
+                            </details>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="glass-card" style="margin-top: 30px; background: rgba(255,255,255,0.06); border: 1.5px solid #4ecdc4;">
+                <h4 style="color:#4ecdc4; margin-bottom:10px;"><i class="fa-solid fa-flag-checkered"></i> Résultat final</h4>
+                @if (Model.EndedAt == null)
+                {
+                    <span class="badge badge-ongoing">En cours</span>
+                }
+                else if (Model.IsTie)
+                {
+                    <span class="badge badge-tie">Match nul</span>
+                }
+                else
+                {
+                    <span class="badge badge-win">🏆 @Model.Winner</span>
+                }
+                <div style="color:#a0aec0; font-size:0.95rem; margin-top:8px;">
+                    Partie terminée le : <b>@(Model.EndedAt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "-")</b>
+                </div>
+            </div>
+        }
+    </div>
+</div>

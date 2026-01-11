@@ -219,6 +219,13 @@
 </div>
 
 <div class="game-container">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" style="background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; color: #ff6b6b; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; width: 100%; text-align: center;">
+            <i class="fa-solid fa-exclamation-triangle"></i> @TempData["Error"]
+        </div>
+    }
+    
     <div class="header">
         <h1>Lobby @gameType</h1>
         <p class="subtitle">@Localizer["Lobby.Subtitle"]</p>
@@ -277,9 +284,9 @@
                                     </small>
                                 </div>
                                 
-                                <form asp-action="Join" method="post" class="lobby-join-form">
+                                <form asp-action="Join" method="post" class="lobby-join-form" data-players="@string.Join(",", lobby.Players.Select(p => p.ToLower()))" onsubmit="return validateJoinForm(this)">
                                     <input type="hidden" name="lobbyId" value="@lobby.Id" />
-                                    <input type="text" name="playerName" class="form-control" placeholder="@Localizer["Lobby.NicknamePlaceholder"]" required />
+                                    <input type="text" name="playerName" class="form-control" placeholder="@Localizer["Lobby.NicknamePlaceholder"]" required oninput="checkJoinName(this)" />
                                     <button type="submit" class="btn-modern btn-success-modern">
                                         @Localizer["Common.Join"]
                                     </button>
@@ -292,3 +299,37 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function checkJoinName(input) {
+            const form = input.closest('form');
+            const players = form.dataset.players.split(',').filter(p => p);
+            const name = input.value.trim().toLowerCase();
+            const isTaken = players.includes(name);
+            
+            input.style.borderColor = isTaken ? '#ff6b6b' : '';
+            
+            // Trouver ou créer le message d'erreur
+            let errorSpan = form.querySelector('.name-error');
+            if (!errorSpan) {
+                errorSpan = document.createElement('span');
+                errorSpan.className = 'name-error';
+                errorSpan.style.cssText = 'color: #ff6b6b; font-size: 0.75rem; display: block; margin-top: 4px;';
+                input.parentNode.insertBefore(errorSpan, input.nextSibling);
+            }
+            errorSpan.textContent = isTaken ? 'Nom déjà pris !' : '';
+            
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = isTaken;
+            btn.style.opacity = isTaken ? '0.5' : '1';
+        }
+
+        function validateJoinForm(form) {
+            const input = form.querySelector('input[name="playerName"]');
+            const players = form.dataset.players.split(',').filter(p => p);
+            const name = input.value.trim().toLowerCase();
+            return !players.includes(name);
+        }
+    </script>
+}

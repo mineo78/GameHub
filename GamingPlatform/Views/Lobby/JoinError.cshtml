@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "Impossible de rejoindre";
+}
+
+@section Styles {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg1: #0f0f1a;
+            --bg2: #1a1a2e;
+            --bg3: #16213e;
+            --text: #e0e0e0;
+            --muted: #a0aec0;
+            --glass: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.10);
+            --red: #ff6b6b;
+            --cyan: #4ecdc4;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 50px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.40);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: var(--red);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--red);
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, var(--cyan), #3dbdb5);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.25);
+            color: #fff;
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <div class="glass-card">
+        <div class="error-icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        
+        <h2>Oups !</h2>
+        
+        <p class="error-message">@ViewBag.Error</p>
+        
+        <a href="/" class="btn-home">
+            <i class="fa-solid fa-home"></i> Retour à l'accueil
+        </a>
+    </div>
+</div>

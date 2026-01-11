@@ -1,0 +1,162 @@
+@model GamingPlatform.Models.GameLobby
+@{
+    ViewData["Title"] = $"Rejoindre {Model.Name}";
+}
+
+@section Styles {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg1: #0f0f1a;
+            --bg2: #1a1a2e;
+            --bg3: #16213e;
+            --text: #e0e0e0;
+            --muted: #a0aec0;
+            --glass: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.10);
+            --red: #ff6b6b;
+            --cyan: #4ecdc4;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--red), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.40);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.1);
+            color: #fff;
+        }
+
+        .form-label {
+            color: var(--muted);
+        }
+
+        .btn-join {
+            background: linear-gradient(135deg, var(--cyan), #3dbdb5);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 700;
+            color: #fff;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-join:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.25);
+            color: #fff;
+        }
+
+        .lobby-info {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .lobby-info p {
+            margin: 5px 0;
+            color: var(--muted);
+        }
+
+        .lobby-info strong {
+            color: var(--text);
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1><i class="fa-solid fa-gamepad"></i> Rejoindre la partie</h1>
+    </div>
+
+    <div class="glass-card">
+        <div class="lobby-info">
+            <p><i class="fa-solid fa-tag"></i> Partie : <strong>@Model.Name</strong></p>
+            <p><i class="fa-solid fa-puzzle-piece"></i> Jeu : <strong>@Model.GameType</strong></p>
+            <p><i class="fa-solid fa-user-tie"></i> Créateur : <strong>@Model.HostName</strong></p>
+            <p><i class="fa-solid fa-users"></i> Joueurs : <strong>@Model.Players.Count / @Model.MaxPlayers</strong></p>
+        </div>
+
+        <form asp-action="JoinByLink" asp-route-id="@Model.Id" method="post" id="joinForm">
+            <div class="mb-4">
+                <label class="form-label">Entrez votre pseudo</label>
+                <input type="text" name="playerName" id="playerNameInput" class="form-control" 
+                       placeholder="Ex: Player1" required autofocus />
+                <div id="nameError" style="color: #ff6b6b; font-size: 0.9rem; margin-top: 8px; display: none;">
+                    <i class="fa-solid fa-exclamation-circle"></i> Ce nom est déjà utilisé dans ce lobby.
+                </div>
+            </div>
+            
+            <button type="submit" id="submitBtn" class="btn btn-join">
+                <i class="fa-solid fa-right-to-bracket"></i> Rejoindre le lobby
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const existingPlayers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Players.Select(p => p.ToLower())));
+        const playerInput = document.getElementById('playerNameInput');
+        const errorDiv = document.getElementById('nameError');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('joinForm');
+
+        function checkName() {
+            const name = playerInput.value.trim().toLowerCase();
+            const isTaken = existingPlayers.includes(name);
+            
+            errorDiv.style.display = isTaken ? 'block' : 'none';
+            playerInput.style.borderColor = isTaken ? '#ff6b6b' : '';
+            submitBtn.disabled = isTaken;
+            submitBtn.style.opacity = isTaken ? '0.5' : '1';
+            submitBtn.style.cursor = isTaken ? 'not-allowed' : 'pointer';
+            
+            return !isTaken;
+        }
+
+        playerInput.addEventListener('input', checkName);
+        playerInput.addEventListener('blur', checkName);
+
+        form.addEventListener('submit', function(e) {
+            if (!checkName()) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

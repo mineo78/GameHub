@@ -483,6 +483,63 @@
 
         /* Hide/Show utility */
         .hidden { display: none !important; }
+
+        /* History Panel Styles */
+        #historyList {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.3) transparent;
+        }
+        
+        #historyList::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #historyList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #historyList::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 3px;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .history-item.red { border-color: #ff6b6b; }
+        .history-item.cyan { border-color: #4ecdc4; }
+        
+        .history-time {
+            color: #6b7280;
+            font-size: 0.75rem;
+            min-width: 55px;
+        }
+        
+        .history-player {
+            font-weight: 600;
+        }
+        
+        .history-player.red { color: #ff6b6b; }
+        .history-player.cyan { color: #4ecdc4; }
+        
+        .history-action {
+            color: #a0aec0;
+        }
+        
+        @@keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -535,6 +592,43 @@
             <div class="column-indicator" id="columnIndicator"></div>
             <div id="gameBoard"></div>
         </div>
+
+        <!-- History Panel -->
+        <div id="historyPanel" class="hidden" style="margin-top: 20px; width: 100%; max-width: 400px;">
+            <div class="status-card" style="max-height: 300px; overflow: hidden;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #4ecdc4; font-size: 1rem;">
+                        📜 Historique des coups
+                    </h3>
+                    <span id="moveCount" style="color: #6b7280; font-size: 0.85rem;">0 coups</span>
+                </div>
+                <div id="historyList" style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
+                    <p style="color: #6b7280; font-size: 0.9rem; text-align: center;">En attente du début de la partie...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rematch Panel (Initially Hidden) -->
+        <div id="rematchPanel" class="hidden" style="margin-top: 30px;">
+            <div class="status-card" style="text-align: center;">
+                <h3 style="margin-bottom: 15px; color: #4ecdc4;">🎮 Rejouer ?</h3>
+                <p id="rematchStatus" style="margin-bottom: 20px; color: #a0aec0;">Voulez-vous faire une revanche avec les mêmes joueurs ?</p>
+                
+                <div id="rematchVotes" style="margin-bottom: 15px; font-size: 0.9rem; color: #6b7280;"></div>
+                
+                <div id="rematchButtons" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button id="btnRematch" onclick="requestRematch()" style="padding: 12px 30px; background: linear-gradient(135deg, #4ecdc4, #3dbdb5); border: none; border-radius: 12px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        ✓ Rejouer
+                    </button>
+                    <button id="btnDecline" onclick="declineRematch()" style="padding: 12px 30px; background: transparent; border: 2px solid rgba(255, 107, 107, 0.5); border-radius: 12px; color: #ff6b6b; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        ✗ Non merci
+                    </button>
+                    <button id="btnBackToLobby" onclick="backToLobby()" style="padding: 12px 30px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #a0aec0; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        ← Retour au lobby
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -555,6 +649,7 @@
             const currentPlayer = '@ViewBag.CurrentPlayer';
             let currentGame = null;
             let myColor = null;
+            let moveCount = 0;
 
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/puissance4Hub")
@@ -569,6 +664,17 @@
 
                 $('#usernameSection').addClass('hidden');
                 $('#gameContainer').removeClass('hidden');
+                $('#historyPanel').removeClass('hidden');
+
+                // Initialiser l'historique
+                $('#historyList').html('');
+                moveCount = 0;
+                addHistoryItem({
+                    timestamp: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}),
+                    playerName: 'Système',
+                    description: 'Partie démarrée',
+                    color: null
+                });
 
                 $('#player1Name').text(gameData.player1.name);
                 $('#player2Name').text(gameData.player2.name);
@@ -577,6 +683,28 @@
                 buildColumnIndicator();
                 updateStatus(gameData.currentPlayer);
             });
+
+            // Recevoir les actions pour l'historique en temps réel
+            connection.on("ActionLogged", function (action) {
+                addHistoryItem(action);
+            });
+
+            function addHistoryItem(action) {
+                moveCount++;
+                const colorClass = action.color === 'Rouge' ? 'red' : (action.color === 'Jaune' ? 'cyan' : '');
+                const playerColorClass = action.color === 'Rouge' ? 'red' : (action.color === 'Jaune' ? 'cyan' : '');
+                
+                const html = `
+                    <div class="history-item ${colorClass}">
+                        <span class="history-time">${action.timestamp}</span>
+                        <span class="history-player ${playerColorClass}">${action.playerName}</span>
+                        <span class="history-action">${action.description}</span>
+                    </div>
+                `;
+                
+                $('#historyList').prepend(html);
+                $('#moveCount').text(moveCount + ' coup' + (moveCount > 1 ? 's' : ''));
+            }
 
             connection.on("PiecePlaced", function (moveData) {
                 updateCell(moveData.row, moveData.column, moveData.color);
@@ -597,6 +725,11 @@
                 }
 
                 hideColumnIndicator();
+                
+                // Afficher le panel de rejeu après 1 seconde
+                setTimeout(() => {
+                    $('#rematchPanel').removeClass('hidden');
+                }, 1000);
             });
 
             connection.on("NotYourTurn", function (message) {
@@ -618,10 +751,16 @@
                 setTimeout(() => $('#gameBoard').css('animation', ''), 500);
             }
 
-            connection.on("OpponentLeft", function (message) {
-                setStatus("😔 " + message, false);
+            connection.on("OpponentLeft", function (data) {
+                setStatus("😔 " + data.message, false);
                 disableBoard();
                 hideColumnIndicator();
+                
+                // Afficher un message et rediriger après quelques secondes
+                setTimeout(() => {
+                    alert("Votre adversaire a quitté la partie. Vous allez être redirigé vers le lobby.");
+                    window.location.href = `/Lobby?gameType=Puissance4`;
+                }, 1000);
             });
 
             function setStatus(text, searching) {
@@ -704,11 +843,73 @@
                 $('.board-cell').addClass('disabled').off('click').off('mouseenter mouseleave');
             }
 
+            // ========================
+            // REMATCH SYSTEM
+            // ========================
+            
+            // Connexion au LobbyHub pour le système de rejeu
+            const lobbyConnection = new signalR.HubConnectionBuilder()
+                .withUrl("/lobbyHub")
+                .withAutomaticReconnect()
+                .build();
+
+            lobbyConnection.on("RematchVoteReceived", function (data) {
+                $('#rematchVotes').html(`<span style="color: #4ecdc4;">✓ ${data.votesCount}/${data.totalPlayers} joueurs veulent rejouer</span>`);
+                
+                // Si le joueur actuel a déjà voté, désactiver le bouton
+                if (data.votes.includes(currentPlayer)) {
+                    $('#btnRematch').prop('disabled', true).css('opacity', '0.5').text('✓ Vote enregistré');
+                }
+            });
+
+            lobbyConnection.on("RematchDeclined", function (data) {
+                $('#rematchStatus').html(`<span style="color: #ff6b6b;">${data.message}</span>`);
+            });
+
+            lobbyConnection.on("RematchStarting", function (data) {
+                $('#rematchStatus').html(`<span style="color: #4ecdc4;">🎮 ${data.message}</span>`);
+                $('#rematchButtons').hide();
+            });
+
+            lobbyConnection.on("GoToRoom", function (id) {
+                window.location.href = `/Lobby?gameType=Puissance4`;
+            });
+
+            lobbyConnection.on("ReturnToLobby", function (data) {
+                alert(data.message);
+                window.location.href = `/Lobby?gameType=Puissance4`;
+            });
+
+            // Démarrer la connexion au LobbyHub
+            lobbyConnection.start().then(function () {
+                lobbyConnection.invoke("JoinLobbyGroup", lobbyId);
+            }).catch(function (err) {
+                console.error("LobbyHub connection error:", err);
+            });
+
+            // Fonctions globales pour les boutons
+            window.requestRematch = function() {
+                lobbyConnection.invoke("RequestRematch", lobbyId, currentPlayer).catch(function (err) {
+                    console.error("Error requesting rematch:", err);
+                });
+            };
+
+            window.declineRematch = function() {
+                lobbyConnection.invoke("DeclineRematch", lobbyId, currentPlayer).catch(function (err) {
+                    console.error("Error declining rematch:", err);
+                });
+                // Cacher les boutons pour ce joueur
+                $('#rematchButtons').html('<p style="color: #a0aec0;">Vous avez refusé. En attente des autres joueurs...</p>');
+            };
+
+            window.backToLobby = function() {
+                window.location.href = `/Lobby?gameType=Puissance4`;
+            };
+
             connection.start().then(function () {
-                connection.invoke("JoinLobbyGroup", lobbyId).then(() => {
-                    // Demander l'état initial du jeu
-                    // Note: Le jeu est déjà démarré par le LobbyHub, donc on attend juste l'event GameStart
-                    // ou on pourrait demander l'état actuel si on arrive en retard
+                connection.invoke("JoinLobbyGroup", lobbyId, currentPlayer).then(() => {
+                    // Enregistrer le joueur pour la détection de déconnexion
+                    connection.invoke("RegisterPlayer", lobbyId, currentPlayer);
                 });
             }).catch(function (err) {
                 setStatus("❌ " + i18n.connectionError, false);

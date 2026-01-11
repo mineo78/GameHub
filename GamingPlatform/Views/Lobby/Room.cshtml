@@ -113,6 +113,25 @@
         <p class="text-muted">@Localizer["Room.Game"]: @Model.GameType</p>
     </div>
 
+    <!-- Lien de partage pour le créateur -->
+    @if (Model.HostName == currentPlayer)
+    {
+        <div class="card p-4 mb-4" style="max-width: 600px; margin: 0 auto;">
+            <h5><i class="fa-solid fa-share-nodes"></i> Partager ce lobby</h5>
+            <p class="text-muted small mb-2">Envoyez ce lien à vos amis pour qu'ils rejoignent la partie :</p>
+            <div class="input-group">
+                <input type="text" id="shareLink" class="form-control bg-dark text-light border-secondary" 
+                       value="@ViewBag.ShareLink" readonly />
+                <button class="btn btn-outline-info" type="button" id="copyLinkBtn" onclick="copyShareLink()">
+                    <i class="fa-solid fa-copy"></i> Copier
+                </button>
+            </div>
+            <small id="copySuccess" class="text-success mt-2 d-none">
+                <i class="fa-solid fa-check"></i> Lien copié !
+            </small>
+        </div>
+    }
+
     <div class="card p-4 mb-4" style="max-width: 600px; margin: 0 auto;">
         <h3>@Localizer["Lobby.Players"] (<span id="playerCount">@Model.Players.Count</span>/@Model.MaxPlayers)</h3>
         <ul id="playerList" class="list-group list-group-flush mt-3">
@@ -148,6 +167,24 @@
         const lobbyId = '@Model.Id';
         const gameType = '@Model.GameType';
         const currentPlayer = '@currentPlayer';
+
+        // Fonction pour copier le lien de partage
+        function copyShareLink() {
+            const linkInput = document.getElementById('shareLink');
+            if (linkInput) {
+                navigator.clipboard.writeText(linkInput.value).then(() => {
+                    const successMsg = document.getElementById('copySuccess');
+                    if (successMsg) {
+                        successMsg.classList.remove('d-none');
+                        setTimeout(() => successMsg.classList.add('d-none'), 2000);
+                    }
+                }).catch(err => {
+                    // Fallback pour les navigateurs plus anciens
+                    linkInput.select();
+                    document.execCommand('copy');
+                });
+            }
+        }
         
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/lobbyHub")

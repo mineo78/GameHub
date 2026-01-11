@@ -156,6 +156,66 @@
         
         .text-success { color: #4ecdc4 !important; }
         .text-warning { color: #ff6b6b !important; }
+
+        /* Hidden class */
+        .hidden { display: none !important; }
+
+        /* History Panel Styles */
+        #historyList {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.3) transparent;
+        }
+        
+        #historyList::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #historyList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #historyList::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 3px;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .history-item.x-piece { border-color: #ff6b6b; }
+        .history-item.o-piece { border-color: #4ecdc4; }
+        
+        .history-time {
+            color: #6b7280;
+            font-size: 0.75rem;
+            min-width: 55px;
+        }
+        
+        .history-player {
+            font-weight: 600;
+        }
+        
+        .history-player.x-piece { color: #ff6b6b; }
+        .history-player.o-piece { color: #4ecdc4; }
+        
+        .history-action {
+            color: #a0aec0;
+        }
+        
+        @@keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
     </style>
 }
 
@@ -180,6 +240,43 @@
     </div>
 
     <div id="board"></div>
+
+    <!-- History Panel -->
+    <div id="historyPanel" style="margin-top: 20px; width: 100%; max-width: 400px;">
+        <div class="status-card" style="max-height: 250px; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #4ecdc4; font-size: 1rem;">
+                    📜 Historique des coups
+                </h3>
+                <span id="moveCount" style="color: #6b7280; font-size: 0.85rem;">0 coups</span>
+            </div>
+            <div id="historyList" style="max-height: 180px; overflow-y: auto; padding-right: 10px;">
+                <p style="color: #6b7280; font-size: 0.9rem; text-align: center;">En attente du début de la partie...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rematch Panel (Initially Hidden) -->
+    <div id="rematchPanel" class="hidden" style="margin-top: 30px; width: 100%;">
+        <div class="status-card" style="text-align: center;">
+            <h3 style="margin-bottom: 15px; color: #4ecdc4;">🎮 Rejouer ?</h3>
+            <p id="rematchStatus" style="margin-bottom: 20px; color: #a0aec0;">Voulez-vous faire une revanche avec les mêmes joueurs ?</p>
+            
+            <div id="rematchVotes" style="margin-bottom: 15px; font-size: 0.9rem; color: #6b7280;"></div>
+            
+            <div id="rematchButtons" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button id="btnRematch" onclick="requestRematch()" style="padding: 12px 30px; background: linear-gradient(135deg, #4ecdc4, #3dbdb5); border: none; border-radius: 12px; color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    ✓ Rejouer
+                </button>
+                <button id="btnDecline" onclick="declineRematch()" style="padding: 12px 30px; background: transparent; border: 2px solid rgba(255, 107, 107, 0.5); border-radius: 12px; color: #ff6b6b; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    ✗ Non merci
+                </button>
+                <button id="btnBackToLobby" onclick="backToLobby()" style="padding: 12px 30px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #a0aec0; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    ← Retour au lobby
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -217,6 +314,7 @@
         
         const lobbyId = '@lobbyId';
         const username = '@playerName';
+        let moveCount = 0;
         
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/morpionHub")
@@ -224,6 +322,23 @@
             .build();
 
         const template = Handlebars.compile($("#board-template").html());
+
+        // Fonction pour ajouter un élément à l'historique
+        function addHistoryItem(action) {
+            moveCount++;
+            const pieceClass = action.piece === 'X' ? 'x-piece' : (action.piece === 'O' ? 'o-piece' : '');
+            
+            const html = `
+                <div class="history-item ${pieceClass}">
+                    <span class="history-time">${action.timestamp}</span>
+                    <span class="history-player ${pieceClass}">${action.playerName}</span>
+                    <span class="history-action">${action.description}</span>
+                </div>
+            `;
+            
+            $('#historyList').prepend(html);
+            $('#moveCount').text(moveCount + ' coup' + (moveCount > 1 ? 's' : ''));
+        }
 
         connection.start().then(() => {
             console.log(i18n.connected);
@@ -238,6 +353,21 @@
             console.log(game);
             $("#status").text(i18n.gameStartsTurn.replace("{0}", game.whoseTurn.name));
             renderBoard(game.board);
+            
+            // Initialiser l'historique
+            $('#historyList').html('');
+            moveCount = 0;
+            addHistoryItem({
+                timestamp: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}),
+                playerName: 'Système',
+                description: 'Partie démarrée',
+                piece: null
+            });
+        });
+
+        // Recevoir les actions pour l'historique en temps réel
+        connection.on("ActionLogged", function (action) {
+            addHistoryItem(action);
         });
 
         connection.on("piecePlaced", (row, col, piece) => {
@@ -254,12 +384,18 @@
 
         connection.on("winner", (winnerName) => {
             $("#status").html(`<span class="text-success">${i18n.winnerIs.replace("{0}", winnerName)}</span>`);
-            alert(i18n.playerWon.replace("{0}", winnerName));
+            // Afficher le panel de rejeu après 1 seconde
+            setTimeout(() => {
+                $('#rematchPanel').removeClass('hidden');
+            }, 1000);
         });
 
         connection.on("tieGame", () => {
             $("#status").text(i18n.tie);
-            alert(i18n.tie);
+            // Afficher le panel de rejeu après 1 seconde
+            setTimeout(() => {
+                $('#rematchPanel').removeClass('hidden');
+            }, 1000);
         });
         
         connection.on("notPlayersTurn", () => {
@@ -268,6 +404,19 @@
         
         connection.on("notValidMove", () => {
             alert(i18n.invalidMove);
+        });
+
+        // Gestion de la déconnexion de l'adversaire
+        connection.on("opponentLeft", () => {
+            $("#status").html(`<span class="text-warning">😔 Votre adversaire a quitté la partie.</span>`);
+            // Désactiver le plateau
+            $("table td").off("click").css("cursor", "not-allowed");
+            
+            // Afficher un message et rediriger après quelques secondes
+            setTimeout(() => {
+                alert("Votre adversaire a quitté la partie. Vous allez être redirigé vers le lobby.");
+                window.location.href = `/Lobby?gameType=Morpion`;
+            }, 1000);
         });
 
         let noticeTimer = null;
@@ -303,5 +452,68 @@
         function makeMove(row, col) {
             connection.invoke("PlacePiece", row, col).catch(err => console.error(err));
         }
+
+        // ========================
+        // REMATCH SYSTEM
+        // ========================
+        
+        // Connexion au LobbyHub pour le système de rejeu
+        const lobbyConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/lobbyHub")
+            .withAutomaticReconnect()
+            .build();
+
+        lobbyConnection.on("RematchVoteReceived", function (data) {
+            $('#rematchVotes').html(`<span style="color: #4ecdc4;">✓ ${data.votesCount}/${data.totalPlayers} joueurs veulent rejouer</span>`);
+            
+            // Si le joueur actuel a déjà voté, désactiver le bouton
+            if (data.votes.includes(username)) {
+                $('#btnRematch').prop('disabled', true).css('opacity', '0.5').text('✓ Vote enregistré');
+            }
+        });
+
+        lobbyConnection.on("RematchDeclined", function (data) {
+            $('#rematchStatus').html(`<span style="color: #ff6b6b;">${data.message}</span>`);
+        });
+
+        lobbyConnection.on("RematchStarting", function (data) {
+            $('#rematchStatus').html(`<span style="color: #4ecdc4;">🎮 ${data.message}</span>`);
+            $('#rematchButtons').hide();
+        });
+
+        lobbyConnection.on("GoToRoom", function (id) {
+            window.location.href = `/Lobby?gameType=Morpion`;
+        });
+
+        lobbyConnection.on("ReturnToLobby", function (data) {
+            alert(data.message);
+            window.location.href = `/Lobby?gameType=Morpion`;
+        });
+
+        // Démarrer la connexion au LobbyHub
+        lobbyConnection.start().then(function () {
+            lobbyConnection.invoke("JoinLobbyGroup", lobbyId);
+        }).catch(function (err) {
+            console.error("LobbyHub connection error:", err);
+        });
+
+        // Fonctions globales pour les boutons
+        window.requestRematch = function() {
+            lobbyConnection.invoke("RequestRematch", lobbyId, username).catch(function (err) {
+                console.error("Error requesting rematch:", err);
+            });
+        };
+
+        window.declineRematch = function() {
+            lobbyConnection.invoke("DeclineRematch", lobbyId, username).catch(function (err) {
+                console.error("Error declining rematch:", err);
+            });
+            // Cacher les boutons pour ce joueur
+            $('#rematchButtons').html('<p style="color: #a0aec0;">Vous avez refusé. En attente des autres joueurs...</p>');
+        };
+
+        window.backToLobby = function() {
+            window.location.href = `/Lobby?gameType=Morpion`;
+        };
     </script>
 }

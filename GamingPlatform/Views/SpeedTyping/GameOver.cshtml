@@ -1,36 +1,84 @@
 ﻿@{
     ViewData["Title"] = Localizer["Game.SpeedTyping.Title"].Value;
+    var lobbyId = ViewBag.LobbyId as string ?? Context.Request.Query["id"].ToString();
+    var currentPlayer = Context.Session.GetString("PlayerName");
 }
 
 @section Styles {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #2c3e50; /* Couleur sombre */
-            color: #ecf0f1; /* Texte clair */
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
         }
         .card {
-            background-color: #34495e;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
             color: #ecf0f1;
         }
         .list-group-item {
-            background-color: #2c3e50;
+            background: rgba(15, 15, 26, 0.5);
             color: #ecf0f1;
-            border: 1px solid #34495e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 5px;
         }
         .list-group-item .badge {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #4ecdc4, #3dbdb5);
         }
         h2, h3 {
             font-weight: bold;
         }
         .btn-primary {
-            background-color: #e74c3c;
-            border-color: #e74c3c;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            border: none;
+            border-radius: 12px;
         }
         .btn-primary:hover {
-            background-color: #c0392b;
-            border-color: #c0392b;
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
+            transform: translateY(-2px);
+        }
+        .rematch-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        .btn-rematch {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4ecdc4, #3dbdb5);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-rematch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.25);
+        }
+        .btn-decline {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 12px;
+            color: #ff6b6b;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-lobby {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #a0aec0;
+            font-weight: 600;
+            cursor: pointer;
         }
     </style>
 }
@@ -41,20 +89,45 @@
         <h2 class="mt-3">@Localizer["SpeedTyping.GameOver.Title"]</h2>
     </div>
     <div id="podiumContainer" class="card shadow p-4"></div>
+    
+    <!-- Rematch Panel -->
+    <div id="rematchPanel" class="rematch-card text-center">
+        <h3 style="color: #4ecdc4; margin-bottom: 15px;">🎮 Rejouer ?</h3>
+        <p id="rematchStatus" style="color: #a0aec0; margin-bottom: 20px;">Voulez-vous faire une revanche avec les mêmes joueurs ?</p>
+        
+        <div id="rematchVotes" style="margin-bottom: 15px; font-size: 0.9rem; color: #6b7280;"></div>
+        
+        <div id="rematchButtons" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button id="btnRematch" onclick="requestRematch()" class="btn-rematch">
+                ✓ Rejouer
+            </button>
+            <button id="btnDecline" onclick="declineRematch()" class="btn-decline">
+                ✗ Non merci
+            </button>
+            <button id="btnBackToLobby" onclick="backToLobby()" class="btn-lobby">
+                ← Retour au lobby
+            </button>
+        </div>
+    </div>
+    
     <div class="text-center mt-4">
-        <a href="/SpeedTyping" class="btn btn-primary">
-            <i class="fa-solid fa-arrow-left"></i> @Localizer["SpeedTyping.GameOver.BackToLobbies"]
+        <a href="/" class="btn btn-primary">
+            <i class="fa-solid fa-home"></i> Retour à l'accueil
         </a>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
     <script>
         const i18n = {
             podiumTitle: "@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Localizer["SpeedTyping.GameOver.PodiumTitle"].Value)",
             noPlayers: "@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Localizer["SpeedTyping.GameOver.NoPlayers"].Value)",
             winnerIs: "@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Localizer["SpeedTyping.GameOver.WinnerIs"].Value)" // "{0}"
         };
+
+        const lobbyId = '@lobbyId';
+        const currentPlayer = '@currentPlayer';
 
         const podium = JSON.parse(localStorage.getItem("podium"));
         const winner = localStorage.getItem("winner");
@@ -97,5 +170,68 @@
             winnerEl.innerHTML = `<i class="fa-solid fa-trophy"></i> ${i18n.winnerIs.replace("{0}", winner)}`;
             container.appendChild(winnerEl);
         }
+
+        // ========================
+        // REMATCH SYSTEM
+        // ========================
+        
+        const lobbyConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/lobbyHub")
+            .withAutomaticReconnect()
+            .build();
+
+        lobbyConnection.on("RematchVoteReceived", function (data) {
+            document.getElementById('rematchVotes').innerHTML = `<span style="color: #4ecdc4;">✓ ${data.votesCount}/${data.totalPlayers} joueurs veulent rejouer</span>`;
+            
+            if (data.votes.includes(currentPlayer)) {
+                const btn = document.getElementById('btnRematch');
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.textContent = '✓ Vote enregistré';
+            }
+        });
+
+        lobbyConnection.on("RematchDeclined", function (data) {
+            document.getElementById('rematchStatus').innerHTML = `<span style="color: #ff6b6b;">${data.message}</span>`;
+        });
+
+        lobbyConnection.on("RematchStarting", function (data) {
+            document.getElementById('rematchStatus').innerHTML = `<span style="color: #4ecdc4;">🎮 ${data.message}</span>`;
+            document.getElementById('rematchButtons').style.display = 'none';
+        });
+
+        lobbyConnection.on("GoToRoom", function (id) {
+            window.location.href = `/Lobby?gameType=SpeedTyping`;
+        });
+
+        lobbyConnection.on("ReturnToLobby", function (data) {
+            alert(data.message);
+            window.location.href = `/Lobby?gameType=SpeedTyping`;
+        });
+
+        lobbyConnection.start().then(function () {
+            if (lobbyId) {
+                lobbyConnection.invoke("JoinLobbyGroup", lobbyId);
+            }
+        }).catch(function (err) {
+            console.error("LobbyHub connection error:", err);
+        });
+
+        window.requestRematch = function() {
+            lobbyConnection.invoke("RequestRematch", lobbyId, currentPlayer).catch(function (err) {
+                console.error("Error requesting rematch:", err);
+            });
+        };
+
+        window.declineRematch = function() {
+            lobbyConnection.invoke("DeclineRematch", lobbyId, currentPlayer).catch(function (err) {
+                console.error("Error declining rematch:", err);
+            });
+            document.getElementById('rematchButtons').innerHTML = '<p style="color: #a0aec0;">Vous avez refusé. En attente des autres joueurs...</p>';
+        };
+
+        window.backToLobby = function() {
+            window.location.href = `/Lobby?gameType=SpeedTyping`;
+        };
     </script>
 }

@@ -476,12 +476,19 @@
             window.location.href = "/SpeedTyping/GameOver?id=" + lobbyId;
         });
 
+        // Gestionnaire quand un joueur quitte la partie
+        connection.on("PlayerLeft", (data) => {
+            console.log("Player left:", data);
+            alert(data.message + " La partie est annulée.");
+            window.location.href = "/Lobby?gameType=SpeedTyping";
+        });
+
         // --- Start Connection ---
         async function startConnection() {
             try {
                 await connection.start();
                 console.log("SignalR Connected.");
-                await connection.invoke("JoinLobbyGroup", lobbyId);
+                await connection.invoke("JoinLobbyGroup", lobbyId, "@currentPlayer");
             } catch (err) {
                 console.error("SignalR Connection Error: ", err);
                 setTimeout(startConnection, 5000);
