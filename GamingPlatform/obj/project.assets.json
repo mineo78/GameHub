@@ -1,39 +1,37 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net9.0": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net9.0": []
   },
   "packageFolders": {
-    "C:\\Users\\mrfan\\.nuget\\packages\\": {}
+    "/home/eddine/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrfan\\OneDrive\\Documents\\backend-main2\\GamingPlatform\\GamingPlatform.csproj",
+      "projectUniqueName": "/home/eddine/Documents/NEt/backend/GamingPlatform/GamingPlatform.csproj",
       "projectName": "GamingPlatform",
-      "projectPath": "C:\\Users\\mrfan\\OneDrive\\Documents\\backend-main2\\GamingPlatform\\GamingPlatform.csproj",
-      "packagesPath": "C:\\Users\\mrfan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrfan\\OneDrive\\Documents\\backend-main2\\GamingPlatform\\obj\\",
+      "projectPath": "/home/eddine/Documents/NEt/backend/GamingPlatform/GamingPlatform.csproj",
+      "packagesPath": "/home/eddine/.nuget/packages/",
+      "outputPath": "/home/eddine/Documents/NEt/backend/GamingPlatform/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\mrfan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/eddine/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net8.0"
+        "net9.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
+        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "projectReferences": {}
         }
       },
@@ -46,11 +44,12 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
-      "net8.0": {
-        "targetAlias": "net8.0",
+      "net9.0": {
+        "targetAlias": "net9.0",
         "imports": [
           "net461",
           "net462",
@@ -70,7 +69,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.112/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
