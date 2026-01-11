@@ -1,0 +1,111 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = GamingPlatform
+build_property.RootNamespace = GamingPlatform
+build_property.ProjectDir = C:\Users\mrfan\OneDrive\Documents\backend-main2\GamingPlatform\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\mrfan\OneDrive\Documents\backend-main2\GamingPlatform
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Admin/GameDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cR2FtZURldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Admin/GameHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cR2FtZUhpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Admin/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Lobby/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Lobby/JoinByLink.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcSm9pbkJ5TGluay5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Lobby/JoinError.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcSm9pbkVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Lobby/Room.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcUm9vbS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Morpion/Game.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTW9ycGlvblxHYW1lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Morpion/Game2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTW9ycGlvblxHYW1lMi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Morpion/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTW9ycGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Puissance4/Game.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVpc3NhbmNlNFxHYW1lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Puissance4/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVpc3NhbmNlNFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/SpeedTyping/Game.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BlZWRUeXBpbmdcR2FtZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/SpeedTyping/GameOver.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BlZWRUeXBpbmdcR2FtZU92ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/SpeedTyping/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BlZWRUeXBpbmdcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/SpeedTyping/Lobby.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BlZWRUeXBpbmdcTG9iYnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/mrfan/OneDrive/Documents/backend-main2/GamingPlatform/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-poqh9lcg04

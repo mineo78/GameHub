@@ -35,19 +35,47 @@ namespace GamingPlatform.Services
             return _lobbies.Values.Where(l => l.GameType == gameType && !l.IsStarted);
         }
 
-        public bool JoinLobby(string lobbyId, string playerName)
+        // Résultat de la tentative de rejoindre un lobby
+        public enum JoinResult
         {
-            if (!_lobbies.TryGetValue(lobbyId, out var lobby)) return false;
-            if (lobby.IsStarted || lobby.Players.Count >= lobby.MaxPlayers) return false;
-            if (lobby.Players.Contains(playerName)) return true; // Already joined
+            Success,
+            LobbyNotFound,
+            GameAlreadyStarted,
+            LobbyFull,
+            NameAlreadyTaken
+        }
+
+        public JoinResult JoinLobby(string lobbyId, string playerName)
+        {
+            if (!_lobbies.TryGetValue(lobbyId, out var lobby)) return JoinResult.LobbyNotFound;
+            if (lobby.IsStarted) return JoinResult.GameAlreadyStarted;
+            if (lobby.Players.Count >= lobby.MaxPlayers) return JoinResult.LobbyFull;
+            
+            // Vérifier si le nom est déjà pris (comparaison insensible à la casse)
+            if (lobby.Players.Any(p => p.Equals(playerName, StringComparison.OrdinalIgnoreCase)))
+                return JoinResult.NameAlreadyTaken;
 
             lobby.Players.Add(playerName);
-            return true;
+            return JoinResult.Success;
         }
 
         public void RemoveLobby(string lobbyId)
         {
             _lobbies.TryRemove(lobbyId, out _);
+        }
+
+        public bool RemovePlayerFromLobby(string lobbyId, string playerName)
+        {
+            if (!_lobbies.TryGetValue(lobbyId, out var lobby)) return false;
+            return lobby.Players.Remove(playerName);
+        }
+
+        public void ResetLobby(string lobbyId)
+        {
+            if (_lobbies.TryGetValue(lobbyId, out var lobby))
+            {
+                lobby.ResetForRematch();
+            }
         }
         
         public bool StartGame(string lobbyId)
