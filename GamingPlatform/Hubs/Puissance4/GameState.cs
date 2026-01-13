@@ -61,6 +61,18 @@ namespace GamingPlatform.Hubs.Puissance4
             players.TryRemove(foundGame.Player2.Id, out _);
         }
 
+        /// <summary>
+        /// Supprime un jeu s'il existe (sans erreur si non trouvé)
+        /// </summary>
+        public void RemoveGameIfExists(string gameId)
+        {
+            if (games.TryRemove(gameId, out var foundGame))
+            {
+                players.TryRemove(foundGame.Player1.Id, out _);
+                players.TryRemove(foundGame.Player2.Id, out _);
+            }
+        }
+
         public void AddToWaitingPool(Player player) => waitingPlayers.Enqueue(player);
 
         public bool IsUsernameTaken(string username)

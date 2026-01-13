@@ -85,7 +85,16 @@ namespace GamingPlatform.Controllers
             var lobby = _lobbyService.GetLobby(id);
             if (lobby == null) return NotFound();
 
-            ViewBag.PlayerName = HttpContext.Session.GetString("PlayerName");
+            var playerName = HttpContext.Session.GetString("PlayerName");
+            
+            // Si le joueur est dans ce lobby, mettre à jour la session avec le bon lobby ID
+            // (utile après un rematch qui crée un nouveau lobby)
+            if (!string.IsNullOrEmpty(playerName) && lobby.Players.Contains(playerName))
+            {
+                HttpContext.Session.SetString("LobbyId", id);
+            }
+            
+            ViewBag.PlayerName = playerName;
             ViewBag.ShareLink = $"{Request.Scheme}://{Request.Host}/Lobby/JoinByLink/{id}";
             return View(lobby);
         }

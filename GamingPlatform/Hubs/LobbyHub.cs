@@ -9,10 +9,17 @@ namespace GamingPlatform.Hubs
     public class LobbyHub : Hub
     {
         private readonly LobbyService _lobbyService;
+        private readonly Morpion.GameState _morpionGameState;
+        private readonly Puissance4.GameState _puissance4GameState;
 
-        public LobbyHub(LobbyService lobbyService)
+        public LobbyHub(
+            LobbyService lobbyService,
+            Morpion.GameState morpionGameState,
+            Puissance4.GameState puissance4GameState)
         {
             _lobbyService = lobbyService;
+            _morpionGameState = morpionGameState;
+            _puissance4GameState = puissance4GameState;
         }
 
         public async Task JoinLobbyGroup(string lobbyId)
@@ -79,6 +86,9 @@ namespace GamingPlatform.Hubs
 
             if (remainingPlayers < minPlayers)
             {
+                // Nettoyer l'ancienne partie
+                CleanupOldGame(lobbyId, lobby.GameType);
+
                 // Pas assez de joueurs, retourner au lobby
                 await Clients.Group(lobbyId).SendAsync("ReturnToLobby", new
                 {
@@ -96,6 +106,9 @@ namespace GamingPlatform.Hubs
             var lobby = _lobbyService.GetLobby(lobbyId);
             if (lobby == null) return;
 
+            // Nettoyer l'ancienne partie selon le type de jeu
+            CleanupOldGame(lobbyId, lobby.GameType);
+
             // Reset le lobby pour une nouvelle partie
             lobby.ResetForRematch();
 
@@ -107,27 +120,69 @@ namespace GamingPlatform.Hubs
         }
 
         /// <summary>
-        /// Démarre une nouvelle partie avec les mêmes joueurs
+        /// Démarre une nouvelle partie avec les joueurs qui ont voté oui
         /// </summary>
         private async Task StartRematch(string lobbyId)
         {
-            var lobby = _lobbyService.GetLobby(lobbyId);
-            if (lobby == null) return;
+            var oldLobby = _lobbyService.GetLobby(lobbyId);
+            if (oldLobby == null) return;
 
-            // Reset le lobby
-            lobby.ResetForRematch();
+            // Sauvegarder les infos de l'ancien lobby
+            var gameName = oldLobby.Name;
+            var gameType = oldLobby.GameType;
+            var maxPlayers = oldLobby.MaxPlayers;
+            var playersWhoVotedYes = oldLobby.RematchVotes.ToList();
+
+            // Le premier joueur qui a voté devient le host
+            var newHost = playersWhoVotedYes.FirstOrDefault() ?? oldLobby.HostName;
+
+            // Nettoyer l'ancienne partie
+            CleanupOldGame(lobbyId, gameType);
+
+            // Supprimer l'ancien lobby
+            _lobbyService.RemoveLobby(lobbyId);
+
+            // Créer un nouveau lobby avec le même nom
+            var newLobby = _lobbyService.CreateLobby(gameName, newHost, gameType, maxPlayers);
+
+            // Ajouter les autres joueurs qui ont voté oui (le host est déjà ajouté)
+            foreach (var player in playersWhoVotedYes.Where(p => p != newHost))
+            {
+                _lobbyService.JoinLobby(newLobby.Id, player);
+            }
 
             // Notifier tout le monde que la revanche commence
             await Clients.Group(lobbyId).SendAsync("RematchStarting", new
             {
-                message = "Tous les joueurs ont accepté ! La revanche commence..."
+                message = "Tous les joueurs ont accepté ! La nouvelle partie commence..."
             });
 
             // Attendre un peu pour l'animation
             await Task.Delay(1500);
 
-            // Rediriger vers la salle d'attente (le host peut relancer)
-            await Clients.Group(lobbyId).SendAsync("GoToRoom", lobbyId);
+            // Rediriger vers la salle d'attente du NOUVEAU lobby
+            await Clients.Group(lobbyId).SendAsync("GoToRoom", new
+            {
+                newLobbyId = newLobby.Id,
+                gameType = gameType
+            });
+        }
+
+        /// <summary>
+        /// Nettoie l'ancienne partie des GameState spécifiques
+        /// </summary>
+        private void CleanupOldGame(string lobbyId, string gameType)
+        {
+            switch (gameType)
+            {
+                case "Morpion":
+                    _morpionGameState.RemoveGameIfExists(lobbyId);
+                    break;
+                case "Puissance4":
+                    _puissance4GameState.RemoveGameIfExists(lobbyId);
+                    break;
+                // SpeedTyping n'utilise pas de GameState séparé
+            }
         }
         
         public async Task StartGame(string lobbyId)

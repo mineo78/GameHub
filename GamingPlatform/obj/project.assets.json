@@ -8,25 +8,24 @@
     "net9.0": []
   },
   "packageFolders": {
-    "/home/eddine/.nuget/packages/": {}
+    "/Users/nabil/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/eddine/Documents/NEt/backend/GamingPlatform/GamingPlatform.csproj",
+      "projectUniqueName": "/Users/nabil/development/study/dotnet/GameHub/GamingPlatform/GamingPlatform.csproj",
       "projectName": "GamingPlatform",
-      "projectPath": "/home/eddine/Documents/NEt/backend/GamingPlatform/GamingPlatform.csproj",
-      "packagesPath": "/home/eddine/.nuget/packages/",
-      "outputPath": "/home/eddine/Documents/NEt/backend/GamingPlatform/obj/",
+      "projectPath": "/Users/nabil/development/study/dotnet/GameHub/GamingPlatform/GamingPlatform.csproj",
+      "packagesPath": "/Users/nabil/.nuget/packages/",
+      "outputPath": "/Users/nabil/development/study/dotnet/GameHub/GamingPlatform/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/eddine/.nuget/NuGet/NuGet.Config"
+        "/Users/nabil/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -45,7 +44,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0": {
@@ -69,7 +68,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.112/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

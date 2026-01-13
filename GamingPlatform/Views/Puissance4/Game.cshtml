@@ -871,8 +871,9 @@
                 $('#rematchButtons').hide();
             });
 
-            lobbyConnection.on("GoToRoom", function (id) {
-                window.location.href = `/Lobby?gameType=Puissance4`;
+            lobbyConnection.on("GoToRoom", function (data) {
+                // Rediriger vers la salle du nouveau lobby
+                window.location.href = `/Lobby/Room/${data.newLobbyId}`;
             });
 
             lobbyConnection.on("ReturnToLobby", function (data) {
