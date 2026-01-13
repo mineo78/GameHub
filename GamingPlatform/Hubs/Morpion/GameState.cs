@@ -4,22 +4,14 @@ using System.Collections.Concurrent;
 
 namespace GamingPlatform.Hubs.Morpion
 {
-    /// <summary>
-    /// This class persists a collection of players and matches, using DI for better modularity.
-    /// </summary>
     public class GameState
     {
-        private readonly ConcurrentDictionary<string, Player> players =
-            new(StringComparer.OrdinalIgnoreCase);
-
-        private readonly ConcurrentDictionary<string, Game> games =
-            new(StringComparer.OrdinalIgnoreCase);
-
+        private readonly ConcurrentDictionary<string, Player> players = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Game> games = new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentQueue<Player> waitingPlayers = new();
-
+        private readonly ConcurrentDictionary<string, Player> _lobbyWaiting = new();
         private readonly IHubContext<MorpionHub> _hubContext;
 
-       
         public GameState(IHubContext<MorpionHub> hubContext)
         {
             _hubContext = hubContext;
@@ -29,7 +21,6 @@ namespace GamingPlatform.Hubs.Morpion
         {
             var player = new Player(username, connectionId);
             players[connectionId] = player;
-            Console.WriteLine($"Player created: {username}, ConnectionId: {connectionId}");
             return player;
         }
 
@@ -42,14 +33,10 @@ namespace GamingPlatform.Hubs.Morpion
         public Game GetGame(Player player, out Player opponent)
         {
             opponent = null;
-
             var foundGame = games.Values.FirstOrDefault(g => g.Id == player.GameId);
             if (foundGame == null) return null;
 
-            opponent = player.Id == foundGame.Player1.Id
-                ? foundGame.Player2
-                : foundGame.Player1;
-
+            opponent = player.Id == foundGame.Player1.Id ? foundGame.Player2 : foundGame.Player1;
             return foundGame;
         }
 
@@ -65,14 +52,10 @@ namespace GamingPlatform.Hubs.Morpion
             {
                 throw new InvalidOperationException("Game not found.");
             }
-
             players.TryRemove(foundGame.Player1.Id, out _);
             players.TryRemove(foundGame.Player2.Id, out _);
         }
 
-        /// <summary>
-        /// Supprime un jeu s'il existe (sans erreur si non trouvé)
-        /// </summary>
         public void RemoveGameIfExists(string gameId)
         {
             if (games.TryRemove(gameId, out var foundGame))
@@ -80,7 +63,6 @@ namespace GamingPlatform.Hubs.Morpion
                 players.TryRemove(foundGame.Player1.Id, out _);
                 players.TryRemove(foundGame.Player2.Id, out _);
             }
-            // Nettoyer aussi la file d'attente du lobby
             _lobbyWaiting.TryRemove(gameId, out _);
         }
 
@@ -91,11 +73,8 @@ namespace GamingPlatform.Hubs.Morpion
 
         public bool IsUsernameTaken(string username)
         {
-            return players.Values.Any(player =>
-                player.Name.Equals(username, StringComparison.InvariantCultureIgnoreCase));
+            return players.Values.Any(player => player.Name.Equals(username, StringComparison.InvariantCultureIgnoreCase));
         }
-
-        private readonly ConcurrentDictionary<string, Player> _lobbyWaiting = new();
 
         public Player RegisterLobbyPlayer(string lobbyId, Player player)
         {
@@ -110,7 +89,6 @@ namespace GamingPlatform.Hubs.Morpion
         public async Task<Game> CreateGame(Player firstPlayer, Player secondPlayer, string gameId = null)
         {
             var game = new Game(firstPlayer, secondPlayer, gameId);
-            
             games[game.Id] = game;
 
             await _hubContext.Groups.AddToGroupAsync(firstPlayer.Id, game.Id);
@@ -124,8 +102,5 @@ namespace GamingPlatform.Hubs.Morpion
             games.TryGetValue(gameId, out var game);
             return game;
         }
-
-    
-    
     }
 }

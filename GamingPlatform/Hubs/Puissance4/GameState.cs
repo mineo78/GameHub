@@ -23,13 +23,13 @@ namespace GamingPlatform.Hubs.Puissance4
             return player;
         }
 
-        public Player? GetPlayer(string playerId)
+        public Player GetPlayer(string playerId)
         {
             players.TryGetValue(playerId, out var foundPlayer);
             return foundPlayer;
         }
 
-        public Game? GetGame(Player player, out Player? opponent)
+        public Game GetGame(Player player, out Player opponent)
         {
             opponent = null;
             var foundGame = games.Values.FirstOrDefault(g => g.Id == player.GameId);
@@ -39,13 +39,13 @@ namespace GamingPlatform.Hubs.Puissance4
             return foundGame;
         }
 
-        public Game? GetGameById(string gameId)
+        public Game GetGameById(string gameId)
         {
             games.TryGetValue(gameId, out var foundGame);
             return foundGame;
         }
 
-        public Player? GetWaitingOpponent()
+        public Player GetWaitingOpponent()
         {
             waitingPlayers.TryDequeue(out var foundPlayer);
             return foundPlayer;
@@ -61,9 +61,6 @@ namespace GamingPlatform.Hubs.Puissance4
             players.TryRemove(foundGame.Player2.Id, out _);
         }
 
-        /// <summary>
-        /// Supprime un jeu s'il existe (sans erreur si non trouvé)
-        /// </summary>
         public void RemoveGameIfExists(string gameId)
         {
             if (games.TryRemove(gameId, out var foundGame))

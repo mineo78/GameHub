@@ -12,13 +12,9 @@ namespace GamingPlatform.Hubs
 
         private static int _currentPlayer = 1;
 
-        private string currentPlayer = "Player1"; // Le joueur qui doit jouer en premier
-private string player1 = "Player1";
-private string player2 = "Player2";
-
         public GameHub()
         {
-            if (_board[0][0] == 0) // Initialise une seule fois le tableau
+            if (_board[0][0] == 0)
             {
                 for (int i = 0; i < 6; i++)
                     _board[i] = new int[7];
@@ -33,14 +29,11 @@ private string player2 = "Player2";
 
         public async Task MakeMove(int row, int col)
         {
-            // Vérifie si le mouvement est valide
             if (row < 0 || row >= 6 || col < 0 || col >= 7 || _board[row][col] != 0)
                 return;
 
-            // Place le jeton du joueur actuel
             _board[row][col] = _currentPlayer;
 
-            // Vérifie si le joueur actuel a gagné
             if (CheckWin(_currentPlayer))
             {
                 await Clients.All.SendAsync("GameOver", _currentPlayer);
@@ -48,16 +41,13 @@ private string player2 = "Player2";
                 return;
             }
 
-            // Passe au joueur suivant
             _currentPlayer = _currentPlayer == 1 ? 2 : 1;
 
-            // Notifie tous les clients de la mise à jour du tableau
             await Clients.All.SendAsync("UpdateBoard", _board);
         }
 
         private bool CheckWin(int player)
         {
-            // Vérifie les alignements horizontaux
             for (int row = 0; row < 6; row++)
             {
                 for (int col = 0; col <= 7 - 4; col++)
@@ -72,7 +62,6 @@ private string player2 = "Player2";
                 }
             }
 
-            // Vérifie les alignements verticaux
             for (int col = 0; col < 7; col++)
             {
                 for (int row = 0; row <= 6 - 4; row++)
@@ -87,7 +76,6 @@ private string player2 = "Player2";
                 }
             }
 
-            // Vérifie les alignements diagonaux (haut-gauche vers bas-droite)
             for (int row = 0; row <= 6 - 4; row++)
             {
                 for (int col = 0; col <= 7 - 4; col++)
@@ -102,7 +90,6 @@ private string player2 = "Player2";
                 }
             }
 
-            // Vérifie les alignements diagonaux (haut-droite vers bas-gauche)
             for (int row = 0; row <= 6 - 4; row++)
             {
                 for (int col = 3; col < 7; col++)

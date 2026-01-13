@@ -32,11 +32,9 @@ namespace GamingPlatform.Controllers
                 return RedirectToAction("Index", new { gameType });
             }
 
-            // SpeedTyping peut avoir plus de joueurs
             int maxPlayers = gameType == "SpeedTyping" ? 10 : 2;
             var lobby = _lobbyService.CreateLobby(name, playerName, gameType, maxPlayers);
             
-            // Set session
             HttpContext.Session.SetString("PlayerName", playerName);
             HttpContext.Session.SetString("LobbyId", lobby.Id);
 
@@ -51,10 +49,7 @@ namespace GamingPlatform.Controllers
             {
                 HttpContext.Session.SetString("PlayerName", playerName);
                 HttpContext.Session.SetString("LobbyId", lobbyId);
-                
-                // Notify others
                 _hubContext.Clients.Group(lobbyId).SendAsync("PlayerJoined", playerName);
-                
                 return RedirectToAction("Room", new { id = lobbyId });
             }
             
@@ -87,8 +82,6 @@ namespace GamingPlatform.Controllers
 
             var playerName = HttpContext.Session.GetString("PlayerName");
             
-            // Si le joueur est dans ce lobby, mettre à jour la session avec le bon lobby ID
-            // (utile après un rematch qui crée un nouveau lobby)
             if (!string.IsNullOrEmpty(playerName) && lobby.Players.Contains(playerName))
             {
                 HttpContext.Session.SetString("LobbyId", id);
@@ -99,14 +92,12 @@ namespace GamingPlatform.Controllers
             return View(lobby);
         }
 
-        // GET: Affiche le formulaire pour rejoindre via lien public
         [HttpGet]
         public IActionResult JoinByLink(string id)
         {
             var lobby = _lobbyService.GetLobby(id);
             if (lobby == null) return NotFound();
 
-            // Si déjà dans le lobby (session), rediriger vers Room
             var existingPlayer = HttpContext.Session.GetString("PlayerName");
             var existingLobbyId = HttpContext.Session.GetString("LobbyId");
             if (!string.IsNullOrEmpty(existingPlayer) && existingLobbyId == id)
@@ -114,7 +105,6 @@ namespace GamingPlatform.Controllers
                 return RedirectToAction("Room", new { id });
             }
 
-            // Vérifier si le lobby est plein ou déjà commencé
             if (lobby.IsStarted)
             {
                 ViewBag.Error = "La partie a déjà commencé.";
@@ -129,7 +119,6 @@ namespace GamingPlatform.Controllers
             return View(lobby);
         }
 
-        // POST: Traite la demande de rejoindre via lien public
         [HttpPost]
         public IActionResult JoinByLink(string id, string playerName)
         {
@@ -143,10 +132,7 @@ namespace GamingPlatform.Controllers
             {
                 HttpContext.Session.SetString("PlayerName", playerName);
                 HttpContext.Session.SetString("LobbyId", id);
-                
-                // Notifier les autres joueurs
                 _hubContext.Clients.Group(id).SendAsync("PlayerJoined", playerName);
-                
                 return RedirectToAction("Room", new { id });
             }
 

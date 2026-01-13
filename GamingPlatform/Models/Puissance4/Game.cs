@@ -27,7 +27,7 @@ namespace GamingPlatform.Models.Puissance4
         public Player WhoseTurn => isFirstPlayersTurn ? Player1 : Player2;
         public bool IsOver { get; private set; }
         public bool IsTie { get; private set; }
-        public Player? Winner { get; private set; }
+        public Player Winner { get; private set; }
 
         public int PlacePiece(int column)
         {

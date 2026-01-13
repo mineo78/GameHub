@@ -35,7 +35,6 @@ namespace GamingPlatform.Services
             return _lobbies.Values.Where(l => l.GameType == gameType && !l.IsStarted);
         }
 
-        // Résultat de la tentative de rejoindre un lobby
         public enum JoinResult
         {
             Success,
@@ -51,7 +50,6 @@ namespace GamingPlatform.Services
             if (lobby.IsStarted) return JoinResult.GameAlreadyStarted;
             if (lobby.Players.Count >= lobby.MaxPlayers) return JoinResult.LobbyFull;
             
-            // Vérifier si le nom est déjà pris (comparaison insensible à la casse)
             if (lobby.Players.Any(p => p.Equals(playerName, StringComparison.OrdinalIgnoreCase)))
                 return JoinResult.NameAlreadyTaken;
 
@@ -80,9 +78,9 @@ namespace GamingPlatform.Services
         
         public bool StartGame(string lobbyId)
         {
-             if (!_lobbies.TryGetValue(lobbyId, out var lobby)) return false;
-             lobby.IsStarted = true;
-             return true;
+            if (!_lobbies.TryGetValue(lobbyId, out var lobby)) return false;
+            lobby.IsStarted = true;
+            return true;
         }
     }
 }

@@ -7,10 +7,6 @@ using GamingPlatform.Models;
 
 namespace GamingPlatform.Services
 {
-    /// <summary>
-    /// Service pour gérer l'historique des actions de jeu
-    /// Permet de tracer toutes les actions pour les contestations
-    /// </summary>
     public class GameHistoryService
     {
         private readonly ConcurrentDictionary<string, GameHistory> _histories = new();
@@ -22,9 +18,6 @@ namespace GamingPlatform.Services
             LoadHistories();
         }
 
-        /// <summary>
-        /// Démarre l'enregistrement d'une nouvelle partie
-        /// </summary>
         public void StartGame(string lobbyId, string lobbyName, string gameType, List<string> players)
         {
             var history = new GameHistory
@@ -38,21 +31,16 @@ namespace GamingPlatform.Services
 
             _histories[lobbyId] = history;
 
-            // Enregistrer l'action de démarrage
             LogAction(lobbyId, gameType, "SYSTEM", "GAME_START", 
                 $"Partie démarrée avec les joueurs: {string.Join(", ", players)}");
             
             SaveHistories();
         }
 
-        /// <summary>
-        /// Enregistre une action dans l'historique
-        /// </summary>
-        public void LogAction(string lobbyId, string gameType, string playerName, string actionType, string details, object? additionalData = null)
+        public void LogAction(string lobbyId, string gameType, string playerName, string actionType, string details, object additionalData = null)
         {
             if (!_histories.TryGetValue(lobbyId, out var history))
             {
-                // Créer un historique si inexistant
                 history = new GameHistory
                 {
                     LobbyId = lobbyId,
@@ -76,10 +64,7 @@ namespace GamingPlatform.Services
             SaveHistories();
         }
 
-        /// <summary>
-        /// Termine une partie et enregistre le résultat
-        /// </summary>
-        public void EndGame(string lobbyId, string? winner, bool isTie)
+        public void EndGame(string lobbyId, string winner, bool isTie)
         {
             if (_histories.TryGetValue(lobbyId, out var history))
             {
@@ -94,27 +79,18 @@ namespace GamingPlatform.Services
             }
         }
 
-        /// <summary>
-        /// Récupère l'historique d'une partie
-        /// </summary>
-        public GameHistory? GetHistory(string lobbyId)
+        public GameHistory GetHistory(string lobbyId)
         {
             _histories.TryGetValue(lobbyId, out var history);
             return history;
         }
 
-        /// <summary>
-        /// Récupère tous les historiques (pour l'admin)
-        /// </summary>
         public IEnumerable<GameHistory> GetAllHistories()
         {
             return _histories.Values.OrderByDescending(h => h.CreatedAt);
         }
 
-        /// <summary>
-        /// Recherche des historiques par critères
-        /// </summary>
-        public IEnumerable<GameHistory> SearchHistories(string? gameType = null, string? playerName = null, DateTime? fromDate = null, DateTime? toDate = null)
+        public IEnumerable<GameHistory> SearchHistories(string gameType = null, string playerName = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             var query = _histories.Values.AsEnumerable();
 
@@ -133,9 +109,6 @@ namespace GamingPlatform.Services
             return query.OrderByDescending(h => h.CreatedAt);
         }
 
-        /// <summary>
-        /// Exporte l'historique d'une partie au format JSON
-        /// </summary>
         public string ExportHistoryJson(string lobbyId)
         {
             if (_histories.TryGetValue(lobbyId, out var history))

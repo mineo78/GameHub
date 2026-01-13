@@ -30,12 +30,10 @@ namespace GamingPlatform.Hubs.Morpion
             }
 
             var player = _gameState.CreatePlayer(username, Context.ConnectionId);
-            
-            // Check if game already exists (reconnection?)
             var existingGame = _gameState.GetGame(lobbyId);
+            
             if (existingGame != null)
             {
-                // Reconnection logic
                 bool isReconnection = false;
                 if (existingGame.Player1.Name == username)
                 {
@@ -59,7 +57,7 @@ namespace GamingPlatform.Hubs.Morpion
                 }
                 else 
                 {
-                     await Clients.Caller.SendAsync("error", "Game already in progress");
+                    await Clients.Caller.SendAsync("error", "Game already in progress");
                 }
                 return;
             }
@@ -68,11 +66,8 @@ namespace GamingPlatform.Hubs.Morpion
             if (opponent != null)
             {
                 var newGame = await _gameState.CreateGame(opponent, player, lobbyId);
-                
-                // Log game start
                 _historyService.StartGame(lobbyId, lobby.Name, "Morpion", new List<string> { opponent.Name, player.Name });
                 _historyService.LogAction(lobbyId, "Morpion", "Système", "GameStart", $"Partie démarrée: {opponent.Name} (X) vs {player.Name} (O)");
-                
                 await Clients.Group(newGame.Id).SendAsync("start", newGame);
             }
             else
@@ -105,12 +100,10 @@ namespace GamingPlatform.Hubs.Morpion
             var game = _gameState.GetGame(playerMakingTurn, out opponent);
             game.PlacePiece(row, col);
 
-            // Log the move
             _historyService.LogAction(game.Id, "Morpion", playerMakingTurn.Name, "PlacePiece", 
                 $"Pièce {playerMakingTurn.Piece} placée en ({row}, {col})",
                 new Dictionary<string, object> { { "row", row }, { "col", col }, { "piece", playerMakingTurn.Piece } });
 
-            // Envoyer l'action à tous les clients pour l'historique en temps réel
             await Clients.Group(game.Id).SendAsync("ActionLogged", new
             {
                 timestamp = DateTime.Now.ToString("HH:mm:ss"),
@@ -149,32 +142,19 @@ namespace GamingPlatform.Hubs.Morpion
 
             if (leavingPlayer != null)
             {
-                Console.WriteLine($"Player disconnected: {leavingPlayer.Id}");
-
-       
                 if (_gameState.GetGame(leavingPlayer, out var opponent) is { } ongoingGame)
                 {
-                    Console.WriteLine($"Notifying opponent of player {leavingPlayer.Id} leaving.");
-                    
-                    // Log player disconnect and end game
                     _historyService.LogAction(ongoingGame.Id, "Morpion", leavingPlayer.Name, "Disconnect", 
                         $"Joueur {leavingPlayer.Name} s'est déconnecté");
                     _historyService.EndGame(ongoingGame.Id, opponent?.Name, false);
                     
                     await Clients.Group(ongoingGame.Id).SendAsync("opponentLeft");
-
-                    // Supprimer le lobby pour éviter qu'il reste en état incohérent
                     _lobbyService.RemoveLobby(ongoingGame.Id);
                     _gameState.RemoveGame(ongoingGame.Id);
-                }
-                else
-                {
-                    Console.WriteLine($"Player {leavingPlayer.Id} is not in any game.");
                 }
             }
 
             await base.OnDisconnectedAsync(exception);
         }
-
     }
 }

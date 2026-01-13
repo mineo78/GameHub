@@ -10,8 +10,6 @@ namespace GamingPlatform.Hubs.Puissance4
         private readonly GameState _gameState;
         private readonly LobbyService _lobbyService;
         private readonly GameHistoryService _historyService;
-        
-        // Mapping ConnectionId -> (LobbyId, PlayerName)
         private static readonly ConcurrentDictionary<string, (string lobbyId, string playerName)> _playerConnections = new();
 
         public Puissance4Hub(GameState gameState, LobbyService lobbyService, GameHistoryService historyService)
@@ -25,13 +23,11 @@ namespace GamingPlatform.Hubs.Puissance4
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
             
-            // Enregistrer la connexion du joueur
             if (!string.IsNullOrEmpty(playerName))
             {
                 _playerConnections[Context.ConnectionId] = (lobbyId, playerName);
             }
 
-            // Si le jeu est déjà commencé, envoyer l'état actuel au joueur qui rejoint
             var lobby = _lobbyService.GetLobby(lobbyId);
             if (lobby != null && lobby.IsStarted && lobby.GameState is Game game)
             {
@@ -71,21 +67,14 @@ namespace GamingPlatform.Hubs.Puissance4
                 return;
             }
 
-            // Créer les joueurs
             var player1 = new Player(lobby.Players[0], lobby.Players[0]);
             var player2 = new Player(lobby.Players[1], lobby.Players[1]);
-
-            // Créer le jeu
             var newGame = new Game(player1, player2);
             
-            // Stocker le jeu dans le GameState du lobby
             lobby.GameState = newGame;
             _lobbyService.StartGame(lobbyId);
-
-            // Logger le démarrage de la partie
             _historyService.StartGame(lobbyId, lobby.Name, "Puissance4", lobby.Players.ToList());
 
-            // Notifier tous les clients
             await Clients.Group(lobbyId).SendAsync("GameStart", new
             {
                 gameId = newGame.Id,
@@ -112,7 +101,6 @@ namespace GamingPlatform.Hubs.Puissance4
                 return;
             }
 
-            // Vérifier que c'est le tour du joueur
             if (game.WhoseTurn.Name != playerName)
             {
                 await Clients.Caller.SendAsync("NotYourTurn", "Ce n'est pas votre tour");
@@ -126,19 +114,17 @@ namespace GamingPlatform.Hubs.Puissance4
             }
 
             var playerColor = game.WhoseTurn.Color;
-
             int row = game.PlacePiece(column);
+            
             if (row == -1)
             {
                 await Clients.Caller.SendAsync("Error", "Impossible de placer le jeton");
                 return;
             }
 
-            // Logger l'action
             _historyService.LogAction(lobbyId, "Puissance4", playerName, "PLACE_PIECE", 
                 $"Jeton placé en colonne {column + 1}, ligne {row + 1}", new { row, column, color = playerColor });
 
-            // Envoyer l'action à tous les clients pour l'historique en temps réel
             await Clients.Group(lobbyId).SendAsync("ActionLogged", new
             {
                 timestamp = DateTime.Now.ToString("HH:mm:ss"),
@@ -179,7 +165,6 @@ namespace GamingPlatform.Hubs.Puissance4
                     });
                 }
 
-                // Marquer la partie comme terminée (ne pas supprimer le lobby pour permettre le rejeu)
                 lobby.IsGameOver = true;
             }
             else
@@ -192,21 +177,19 @@ namespace GamingPlatform.Hubs.Puissance4
             }
         }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
             if (_playerConnections.TryRemove(Context.ConnectionId, out var playerInfo))
             {
                 var lobby = _lobbyService.GetLobby(playerInfo.lobbyId);
                 if (lobby != null && lobby.IsStarted && !lobby.IsGameOver)
                 {
-                    // La partie est en cours, notifier les autres joueurs
                     await Clients.Group(playerInfo.lobbyId).SendAsync("OpponentLeft", new
                     {
                         playerName = playerInfo.playerName,
                         message = $"{playerInfo.playerName} a quitté la partie."
                     });
                     
-                    // Supprimer le jeu et le lobby pour éviter les états incohérents
                     try { _gameState.RemoveGame(playerInfo.lobbyId); } catch { }
                     _lobbyService.RemoveLobby(playerInfo.lobbyId);
                 }

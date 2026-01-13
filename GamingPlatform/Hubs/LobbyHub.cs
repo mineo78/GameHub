@@ -32,22 +32,13 @@ namespace GamingPlatform.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
         }
 
-        // ========================
-        // REMATCH SYSTEM
-        // ========================
-
-        /// <summary>
-        /// Un joueur demande une revanche (vote pour rejouer)
-        /// </summary>
         public async Task RequestRematch(string lobbyId, string playerName)
         {
             var lobby = _lobbyService.GetLobby(lobbyId);
             if (lobby == null) return;
 
-            // Ajouter le vote
             lobby.RematchVotes.Add(playerName);
 
-            // Notifier tout le monde du vote
             await Clients.Group(lobbyId).SendAsync("RematchVoteReceived", new
             {
                 playerName = playerName,
@@ -56,16 +47,12 @@ namespace GamingPlatform.Hubs
                 votes = lobby.RematchVotes.ToList()
             });
 
-            // Vérifier si tous les joueurs ont accepté
             if (lobby.RematchVotes.Count == lobby.Players.Count)
             {
                 await StartRematch(lobbyId);
             }
         }
 
-        /// <summary>
-        /// Un joueur refuse la revanche
-        /// </summary>
         public async Task DeclineRematch(string lobbyId, string playerName)
         {
             var lobby = _lobbyService.GetLobby(lobbyId);
@@ -73,23 +60,19 @@ namespace GamingPlatform.Hubs
 
             lobby.RematchDeclined.Add(playerName);
 
-            // Notifier tout le monde
             await Clients.Group(lobbyId).SendAsync("RematchDeclined", new
             {
                 playerName = playerName,
                 message = $"{playerName} a refusé la revanche."
             });
 
-            // Vérifier s'il reste assez de joueurs pour jouer
             int minPlayers = lobby.GameType == "SpeedTyping" ? 1 : 2;
             int remainingPlayers = lobby.Players.Count - lobby.RematchDeclined.Count;
 
             if (remainingPlayers < minPlayers)
             {
-                // Nettoyer l'ancienne partie
                 CleanupOldGame(lobbyId, lobby.GameType);
 
-                // Pas assez de joueurs, retourner au lobby
                 await Clients.Group(lobbyId).SendAsync("ReturnToLobby", new
                 {
                     reason = "not_enough_players",
@@ -98,18 +81,12 @@ namespace GamingPlatform.Hubs
             }
         }
 
-        /// <summary>
-        /// Retourne tout le monde au lobby (appelé par un joueur ou automatiquement)
-        /// </summary>
         public async Task ReturnAllToLobby(string lobbyId)
         {
             var lobby = _lobbyService.GetLobby(lobbyId);
             if (lobby == null) return;
 
-            // Nettoyer l'ancienne partie selon le type de jeu
             CleanupOldGame(lobbyId, lobby.GameType);
-
-            // Reset le lobby pour une nouvelle partie
             lobby.ResetForRematch();
 
             await Clients.Group(lobbyId).SendAsync("ReturnToLobby", new
@@ -119,48 +96,35 @@ namespace GamingPlatform.Hubs
             });
         }
 
-        /// <summary>
-        /// Démarre une nouvelle partie avec les joueurs qui ont voté oui
-        /// </summary>
         private async Task StartRematch(string lobbyId)
         {
             var oldLobby = _lobbyService.GetLobby(lobbyId);
             if (oldLobby == null) return;
 
-            // Sauvegarder les infos de l'ancien lobby
             var gameName = oldLobby.Name;
             var gameType = oldLobby.GameType;
             var maxPlayers = oldLobby.MaxPlayers;
             var playersWhoVotedYes = oldLobby.RematchVotes.ToList();
 
-            // Le premier joueur qui a voté devient le host
             var newHost = playersWhoVotedYes.FirstOrDefault() ?? oldLobby.HostName;
 
-            // Nettoyer l'ancienne partie
             CleanupOldGame(lobbyId, gameType);
-
-            // Supprimer l'ancien lobby
             _lobbyService.RemoveLobby(lobbyId);
 
-            // Créer un nouveau lobby avec le même nom
             var newLobby = _lobbyService.CreateLobby(gameName, newHost, gameType, maxPlayers);
 
-            // Ajouter les autres joueurs qui ont voté oui (le host est déjà ajouté)
             foreach (var player in playersWhoVotedYes.Where(p => p != newHost))
             {
                 _lobbyService.JoinLobby(newLobby.Id, player);
             }
 
-            // Notifier tout le monde que la revanche commence
             await Clients.Group(lobbyId).SendAsync("RematchStarting", new
             {
                 message = "Tous les joueurs ont accepté ! La nouvelle partie commence..."
             });
 
-            // Attendre un peu pour l'animation
             await Task.Delay(1500);
 
-            // Rediriger vers la salle d'attente du NOUVEAU lobby
             await Clients.Group(lobbyId).SendAsync("GoToRoom", new
             {
                 newLobbyId = newLobby.Id,
@@ -168,9 +132,6 @@ namespace GamingPlatform.Hubs
             });
         }
 
-        /// <summary>
-        /// Nettoie l'ancienne partie des GameState spécifiques
-        /// </summary>
         private void CleanupOldGame(string lobbyId, string gameType)
         {
             switch (gameType)
@@ -181,7 +142,6 @@ namespace GamingPlatform.Hubs
                 case "Puissance4":
                     _puissance4GameState.RemoveGameIfExists(lobbyId);
                     break;
-                // SpeedTyping n'utilise pas de GameState séparé
             }
         }
         
@@ -190,7 +150,6 @@ namespace GamingPlatform.Hubs
             var lobby = _lobbyService.GetLobby(lobbyId);
             if (lobby == null) return;
 
-            // Initialiser le GameState selon le type de jeu
             if (lobby.GameType == "SpeedTyping")
             {
                 if (lobby.GameState == null)
@@ -203,7 +162,6 @@ namespace GamingPlatform.Hubs
                     lobby.GameState = speedTypingGame;
                 }
                 
-                // Démarrer le jeu SpeedTyping pour générer le texte
                 if (lobby.GameState is Models.SpeedTypingGame game)
                 {
                     game.StartGame();
